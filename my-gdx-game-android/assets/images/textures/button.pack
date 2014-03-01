@@ -1,0 +1,68 @@
+
+button.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dl
+  rotate: false
+  xy: 1, 167
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ul
+  rotate: false
+  xy: 1, 101
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+d
+  rotate: false
+  xy: 67, 167
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+u
+  rotate: false
+  xy: 1, 35
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+l
+  rotate: false
+  xy: 67, 101
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+r
+  rotate: false
+  xy: 133, 167
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+dr
+  rotate: false
+  xy: 67, 35
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ur
+  rotate: false
+  xy: 133, 101
+  size: 63, 64
+  orig: 63, 64
+  offset: 0, 0
+  index: -1
+slow
+  rotate: false
+  xy: 1, 1
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
