@@ -12,10 +12,10 @@ public class Self extends Aircraft {
 	public static final float RADIUS = 0.375f;
 	public static final float HALF_IMG_WIDTH = 1f;
 	public static final float HALF_IMG_HEIGHT = 1.5f;
-	public static final float HIGH_SPEED = 8f;
-	public static final float LOW_SPEED = 4f;
-	public static final float HIGH_CROSS_SPEED = 5.657f;
-	public static final float LOW_CROSS_SPEED = 2.828f;
+	public static final float HIGH_SPEED = 12f;
+	public static final float LOW_SPEED = 6f;
+	public static final float HIGH_CROSS_SPEED = 8.487f;
+	public static final float LOW_CROSS_SPEED = 4.243f;
 	public static final int UP = 1;
 	public static final int DOWN = -1;
 	public static final int LEFT = -1;

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -33,6 +34,8 @@ public class GameScreen implements Screen {
 	private ImageButton upRight;
 	private ImageButton downLeft;
 	private ImageButton downRight;
+	private ImageButton slow;
+	private ClickListener listener;
 
 	public GameScreen(Game parent) {
 		GL_WIDTH = Gdx.graphics.getWidth();
@@ -45,33 +48,12 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glViewport(QUARTER_GL_WIDTH, 0, QUARTER_GL_WIDTH << 1, GL_HEIGHT);
-		checkButtons();
+//		 checkButtons();
 		wc.update(delta);
 		wr.draw();
 		Gdx.gl.glViewport(0, 0, GL_WIDTH, GL_HEIGHT);
 		inputStage.act(delta);
 		inputStage.draw();
-	}
-	
-	private void checkButtons() {
-		// TODO add slow and cross check
-		if (up.isPressed()) {
-			wc.setSelfVerticalDirection(Self.UP);
-			wc.setSelfMoving(true);
-		} else if (down.isPressed()) {
-			wc.setSelfVerticalDirection(Self.DOWN);
-			wc.setSelfMoving(true);
-		} else if (left.isPressed()) {
-			wc.setSelfHorizentalDirection(Self.LEFT);
-			wc.setSelfMoving(true);
-		} else if (right.isPressed()) {
-			wc.setSelfHorizentalDirection(Self.RIGHT);
-			wc.setSelfMoving(true);
-		} else {
-			wc.setSelfHorizentalDirection(Self.STOP);
-			wc.setSelfVerticalDirection(Self.STOP);
-			wc.setSelfMoving(false);
-		}
 	}
 
 	@Override
@@ -84,37 +66,146 @@ public class GameScreen implements Screen {
 		wc = new WorldController(world);
 		wr = new WorldRenderer(world);
 		inputStage = new Stage();
+
 		loadButtons();
 		Gdx.input.setInputProcessor(inputStage);
 	}
-	
+
 	private void loadButtons() {
-		// TODO
-		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/textures/button.pack"));
+
+		TextureAtlas atlas = new TextureAtlas(
+				Gdx.files.internal("images/textures/button.pack"));
 		final float WH = (QUARTER_GL_WIDTH - 10f) / 3f;
 		final float MARGIN = 5f;
-		
+
+		listener = new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				touchDragged(event, x, y, pointer);
+				return true;
+			}
+
+			@Override
+			public void touchDragged(InputEvent event, float x, float y,
+					int pointer) {
+				x = event.getStageX();
+				y = event.getStageY();
+				if (isOverButton(up, x, y)) {
+					wc.setSelfHorizentalDirection(Self.STOP);
+					wc.setSelfVerticalDirection(Self.UP);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(down, x, y)) {
+					wc.setSelfHorizentalDirection(Self.STOP);
+					wc.setSelfVerticalDirection(Self.DOWN);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(left, x, y)) {
+					wc.setSelfHorizentalDirection(Self.LEFT);
+					wc.setSelfVerticalDirection(Self.STOP);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(right, x, y)) {
+					wc.setSelfHorizentalDirection(Self.RIGHT);
+					wc.setSelfVerticalDirection(Self.STOP);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(upLeft, x, y)) {
+					wc.setSelfHorizentalDirection(Self.LEFT);
+					wc.setSelfVerticalDirection(Self.UP);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(upRight, x, y)) {
+					wc.setSelfHorizentalDirection(Self.RIGHT);
+					wc.setSelfVerticalDirection(Self.UP);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(downLeft, x, y)) {
+					wc.setSelfHorizentalDirection(Self.LEFT);
+					wc.setSelfVerticalDirection(Self.DOWN);
+					wc.setSelfMoving(true);
+				} else if (isOverButton(downRight, x, y)) {
+					wc.setSelfHorizentalDirection(Self.RIGHT);
+					wc.setSelfVerticalDirection(Self.DOWN);
+					wc.setSelfMoving(true);
+				} else if (!isOverButton(slow, x, y)) {
+					wc.setSelfHorizentalDirection(Self.STOP);
+					wc.setSelfVerticalDirection(Self.STOP);
+					wc.setSelfMoving(false);
+				}
+				if (isOverButton(slow, x, y)) {
+					wc.setSelfSlow(true);
+				} else {
+					wc.setSelfSlow(false);
+				}
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				wc.setSelfHorizentalDirection(Self.STOP);
+				wc.setSelfVerticalDirection(Self.STOP);
+				wc.setSelfMoving(false);
+			}
+			
+			private boolean isOverButton(ImageButton b, float x, float y) {
+				float bx = b.getX();
+				float by = b.getY();
+				return x > bx && x < bx + b.getWidth() && y > by && y < by + b.getHeight();
+			}
+		};
 		up = new ImageButton(new TextureRegionDrawable(atlas.findRegion("u")));
 		up.setSize(WH, WH);
 		up.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH, MARGIN + WH * 2);
+		up.addListener(listener);
 		inputStage.addActor(up);
-		
+
 		down = new ImageButton(new TextureRegionDrawable(atlas.findRegion("d")));
 		down.setSize(WH, WH);
 		down.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH, MARGIN);
+		down.addListener(listener);
 		inputStage.addActor(down);
-		
+
 		left = new ImageButton(new TextureRegionDrawable(atlas.findRegion("l")));
 		left.setSize(WH, WH);
 		left.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN + WH);
+		left.addListener(listener);
 		inputStage.addActor(left);
-		
-		right = new ImageButton(new TextureRegionDrawable(atlas.findRegion("r")));
+
+		right = new ImageButton(
+				new TextureRegionDrawable(atlas.findRegion("r")));
 		right.setSize(WH, WH);
 		right.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN + WH);
+		right.addListener(listener);
 		inputStage.addActor(right);
+		
+		upLeft = new ImageButton(new TextureRegionDrawable(atlas.findRegion("ul")));
+		upLeft.setSize(WH, WH);
+		upLeft.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN + WH * 2);
+		upLeft.addListener(listener);
+		inputStage.addActor(upLeft);
+		
+		upRight = new ImageButton(new TextureRegionDrawable(atlas.findRegion("ur")));
+		upRight.setSize(WH, WH);
+		upRight.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN + WH * 2);
+		upRight.addListener(listener);
+		inputStage.addActor(upRight);
+		
+		downLeft = new ImageButton(new TextureRegionDrawable(atlas.findRegion("dl")));
+		downLeft.setSize(WH, WH);
+		downLeft.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN);
+		downLeft.addListener(listener);
+		inputStage.addActor(downLeft);
+		
+		downRight = new ImageButton(new TextureRegionDrawable(atlas.findRegion("dr")));
+		downRight.setSize(WH, WH);
+		downRight.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN);
+		downRight.addListener(listener);
+		inputStage.addActor(downRight);
+
+		slow = new ImageButton(new TextureRegionDrawable(atlas.findRegion("slow")));
+		slow.setSize(WH, WH);
+		slow.setPosition((QUARTER_GL_WIDTH - slow.getWidth()) / 2f + MARGIN, MARGIN);
+		slow.addListener(listener);
+		inputStage.addActor(slow);
+		// TODO add bomb
 	}
-	
+
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
@@ -138,5 +229,5 @@ public class GameScreen implements Screen {
 		wr.dispose();
 		inputStage.dispose();
 	}
-
+	
 }

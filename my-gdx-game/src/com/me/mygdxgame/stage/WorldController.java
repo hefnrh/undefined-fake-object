@@ -78,6 +78,10 @@ public class WorldController {
 		self.setMoving(b);
 	}
 	
+	public void setSelfSlow(boolean b) {
+		self.setLowSpeed(b);
+	}
+	
 	public World getWorld() {
 		return world;
 	}
