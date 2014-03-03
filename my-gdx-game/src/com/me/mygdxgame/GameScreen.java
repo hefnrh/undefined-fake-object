@@ -3,6 +3,7 @@ package com.me.mygdxgame;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -35,6 +36,8 @@ public class GameScreen implements Screen {
 	private ImageButton downRight;
 	private ImageButton slow;
 	private ClickListener listener;
+	
+	private Music bgm;
 
 	public GameScreen(Game parent) {
 		GL_WIDTH = Gdx.graphics.getWidth();
@@ -65,9 +68,11 @@ public class GameScreen implements Screen {
 		wc = new WorldController(world);
 		wr = new WorldRenderer(world);
 		inputStage = new Stage();
-
 		loadButtons();
 		Gdx.input.setInputProcessor(inputStage);
+		bgm = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm.mp3"));
+		bgm.setLooping(true);
+		bgm.play();
 	}
 
 	private void loadButtons() {
@@ -235,6 +240,7 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		wr.dispose();
 		inputStage.dispose();
+		bgm.dispose();
 	}
 
 }

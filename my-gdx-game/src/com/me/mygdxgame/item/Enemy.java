@@ -2,7 +2,8 @@ package com.me.mygdxgame.item;
 
 
 public class Enemy extends Aircraft {
-
+	
+	public int hp;
 
 	protected Enemy(float x, float y, float width, float height,
 			float checkRadius) {

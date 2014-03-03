@@ -1,8 +1,12 @@
 package com.me.mygdxgame.stage;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.item.Bullet;
@@ -13,12 +17,16 @@ public class WorldController {
 
 	private World world;
 	private Self self;
+	private List<Bullet> uselessSelfBullet;
+	private List<Bullet> uselessEnemyBullet;
 	
 	public WorldController(World world) {
 		this.world = world;
 		world.setSelf(Self
 				.getInstance(World.CAMERA_WIDTH / 2, 10f));
 		self = world.getSelf();
+		uselessSelfBullet = new LinkedList<Bullet>();
+		uselessEnemyBullet = new LinkedList<Bullet>();
 		addDebugBullets();
 	}
 
@@ -27,7 +35,8 @@ public class WorldController {
 		Bullet b;
 		for (int i = 0; i < 10; ++i) {
 			b = new Bullet((i * 1.5f + 5), 30, 1.2f, 1.2f, 0.4f, img);
-			b.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(15, 0.5f)));
+			b.setOrigin(b.getWidth() * 4, b.getHeight() * 4);
+			b.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(MathUtils.random(-180, 180), 0.5f)));
 			world.addEnemyBullet(b);
 		}
 		for (int i = 0; i < 10; ++i) {
@@ -46,12 +55,16 @@ public class WorldController {
 		// TODO update enemies
 		detectCollision();
 		detectOutOfWorld();
+		recycleUselessBullets();
 	}
 	
 	private void detectCollision() {
 		for (Bullet b : world.getEnemyBullets()) {
 			if (b.isHit(self)) {
 				// TODO do sth
+				uselessEnemyBullet.add(b);
+				self.hitBy(b);
+				break;
 			}
 		}
 		for (Bullet b : world.getSelfBullets()) {
@@ -70,6 +83,16 @@ public class WorldController {
 		for (Bullet b : world.getSelfBullets()) {
 			// TODO do sth
 		}
+	}
+	
+	private void recycleUselessBullets() {
+		for (Bullet b: uselessEnemyBullet) {
+			world.removeEnemyBullet(b);
+		}
+		for (Bullet b: uselessSelfBullet) {
+			world.removeSelfBullet(b);
+		}
+		
 	}
 	
 	public void setSelfVerticalDirection(int i) {
