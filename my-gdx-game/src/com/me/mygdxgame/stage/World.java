@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
 import com.me.mygdxgame.item.Self;
@@ -19,6 +20,8 @@ public class World {
 	private List<Bullet> enemyBullets = new LinkedList<Bullet>();
 	private List<Enemy> enemies = new LinkedList<Enemy>();
 	private Camera camera;
+	private Texture bg;
+	private float time;
 	
 	public World() {
 		camera = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
@@ -32,6 +35,14 @@ public class World {
 	
 	public void setSelf(Self self) {
 		this.self = self;
+	}
+	
+	public Texture getBg() {
+		return bg;
+	}
+	
+	public void setBg(Texture bg) {
+		this.bg = bg;
 	}
 	
 	public void addSelfBullet(Bullet b) {
@@ -74,4 +85,11 @@ public class World {
 		return camera;
 	}
 	
+	public void updateTime(float delta) {
+		time += delta;
+	}
+	
+	public float getTime() {
+		return time;
+	}
 }

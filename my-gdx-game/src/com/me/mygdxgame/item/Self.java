@@ -1,6 +1,6 @@
 package com.me.mygdxgame.item;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Self extends Aircraft {
 
 	public static final float RADIUS = 0.375f;
-	public static final float HALF_IMG_WIDTH = 1f;
-	public static final float HALF_IMG_HEIGHT = 1.5f;
+	public static final float IMG_WIDTH = 2f;
+	public static final float IMG_HEIGHT = 3f;
 	public static final float HIGH_SPEED = 12f;
 	public static final float LOW_SPEED = 6f;
 	public static final float HIGH_CROSS_SPEED = 8.487f;
@@ -31,23 +31,23 @@ public class Self extends Aircraft {
 	private boolean moving;
 
 	protected Self(float x, float y, float width, float height,
-			float checkRadius) {
-		super(x, y, width, height, checkRadius);
+			float checkRadius, AssetManager resources) {
+		super(x, y, width, height, checkRadius, resources);
 	}
 
 	@Override
-	protected void loadAtlas() {
-		Texture origin = new Texture(Gdx.files.internal("images/self1.jpg"));
-		TextureRegion[] frames = new TextureRegion(origin, 0, 0, 256, 48)
+	protected void loadAtlas(AssetManager resources) {
+		TextureRegion[] frames = new TextureRegion(resources.get(
+				"images/self1.jpg", Texture.class), 0, 0, 256, 48)
 				.split(32, 48)[0];
 		selfIdle = new Animation(RUNNING_FRAME_DURATION, frames);
 		img = selfIdle.getKeyFrame(0, true);
 	}
 
-	public static Self getInstance(float x, float y) {
+	public static Self getInstance(float x, float y, AssetManager resources) {
 		if (self != null)
 			return self;
-		self = new Self(x, y, HALF_IMG_WIDTH * 2, HALF_IMG_HEIGHT * 2, RADIUS);
+		self = new Self(x, y, IMG_WIDTH, IMG_HEIGHT, RADIUS, resources);
 		return self;
 	}
 
@@ -85,7 +85,7 @@ public class Self extends Aircraft {
 	public void hitBy(Item i) {
 		// TODO
 	}
-	
+
 	@Override
 	public void draw(SpriteBatch sb, float alpha) {
 		super.draw(sb, alpha);
@@ -93,7 +93,7 @@ public class Self extends Aircraft {
 			// TODO draw check circle
 		}
 	}
-	
+
 	public void setMoving(boolean b) {
 		moving = b;
 	}

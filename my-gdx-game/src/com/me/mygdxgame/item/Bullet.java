@@ -14,5 +14,5 @@ public class Bullet extends Item {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }

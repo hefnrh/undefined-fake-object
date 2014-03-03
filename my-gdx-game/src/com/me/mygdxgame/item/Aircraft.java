@@ -1,5 +1,6 @@
 package com.me.mygdxgame.item;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -11,12 +12,12 @@ public abstract class Aircraft extends Item {
 	protected Animation selfIdle;
 	
 	protected Aircraft(float x, float y, float width, float height,
-			float checkRadius) {
+			float checkRadius, AssetManager resources) {
 		super(x, y, width, height, checkRadius, null);
-		loadAtlas();
+		loadAtlas(resources);
 	}
 	
-	protected abstract void loadAtlas();
+	protected abstract void loadAtlas(AssetManager resources);
 	
 	@Override
 	public void act(float delta) {

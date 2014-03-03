@@ -3,8 +3,10 @@ package com.me.mygdxgame;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,6 +27,7 @@ public class GameScreen implements Screen {
 	private final int GL_WIDTH;
 	private final int QUARTER_GL_WIDTH;
 	private final int GL_HEIGHT;
+	private AssetManager resources;
 
 	private ImageButton up;
 	private ImageButton down;
@@ -50,7 +53,6 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glViewport(QUARTER_GL_WIDTH, 0, QUARTER_GL_WIDTH << 1, GL_HEIGHT);
-		// checkButtons();
 		wc.update(delta);
 		wr.draw();
 		Gdx.gl.glViewport(0, 0, GL_WIDTH, GL_HEIGHT);
@@ -64,17 +66,29 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void show() {
+		loadRescources();
 		world = new World();
-		wc = new WorldController(world);
+		wc = new WorldController(world, resources);
 		wr = new WorldRenderer(world);
 		inputStage = new Stage();
 		loadButtons();
 		Gdx.input.setInputProcessor(inputStage);
-		bgm = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm.mp3"));
+		bgm = resources.get("sound/bgm.mp3", Music.class);
 		bgm.setLooping(true);
 		bgm.play();
 	}
 
+	private void loadRescources() {
+		resources = new AssetManager();
+		resources.load("sound/bgm.mp3", Music.class);
+		resources.load("images/textures/button.pack", TextureAtlas.class);
+		resources.load("images/bullet2.jpg", Texture.class);
+		resources.load("images/self1.jpg", Texture.class);
+		resources.load("images/bg1.jpg", Texture.class);
+		// FIXME remove after debug
+		while (!resources.update());
+	}
+	
 	private void loadButtons() {
 
 		TextureAtlas atlas = new TextureAtlas(
@@ -240,7 +254,7 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		wr.dispose();
 		inputStage.dispose();
-		bgm.dispose();
+		resources.dispose();
 	}
 
 }
