@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
 public class Self extends Aircraft {
 
@@ -24,39 +23,32 @@ public class Self extends Aircraft {
 
 	private static Self self;
 
-	private Animation selfIdle;
 	private boolean lowSpeed;
 	private int verticalDirection;
 	private int horizentalDirection;
+	private float speedx;
+	private float speedy;
+	private boolean moving;
 
-	private Self(Vector2 position) {
-		super(position, RADIUS);
-		moving = false;
-		loadAtlas();
+	protected Self(float x, float y, float width, float height,
+			float checkRadius) {
+		super(x, y, width, height, checkRadius);
 	}
 
-	private void loadAtlas() {
+	@Override
+	protected void loadAtlas() {
 		Texture origin = new Texture(Gdx.files.internal("images/self1.jpg"));
 		TextureRegion[] frames = new TextureRegion(origin, 0, 0, 256, 48)
 				.split(32, 48)[0];
 		selfIdle = new Animation(RUNNING_FRAME_DURATION, frames);
+		img = selfIdle.getKeyFrame(0, true);
 	}
 
-	public static Self getInstance(Vector2 position) {
+	public static Self getInstance(float x, float y) {
 		if (self != null)
 			return self;
-		self = new Self(position);
-		self.imgBound.x = position.x - HALF_IMG_WIDTH;
-		self.imgBound.y = position.y - HALF_IMG_HEIGHT;
-		self.imgBound.width = 2 * HALF_IMG_WIDTH;
-		self.imgBound.height = 2 * HALF_IMG_HEIGHT;
+		self = new Self(x, y, HALF_IMG_WIDTH * 2, HALF_IMG_HEIGHT * 2, RADIUS);
 		return self;
-	}
-
-	public void setPosition(float x, float y) {
-		super.setPosition(x, y);
-		imgBound.x = x - HALF_IMG_WIDTH;
-		imgBound.y = y - HALF_IMG_HEIGHT;
 	}
 
 	public void setVerticalDirection(int i) {
@@ -71,7 +63,8 @@ public class Self extends Aircraft {
 		lowSpeed = b;
 	}
 
-	public void update(float delta) {
+	@Override
+	public void act(float delta) {
 		if (moving) {
 			float speedScale;
 			if (lowSpeed) {
@@ -83,18 +76,25 @@ public class Self extends Aircraft {
 			}
 			speedx = speedScale * horizentalDirection;
 			speedy = speedScale * verticalDirection;
+			translate(delta * speedx, delta * speedy);
 		}
-		super.update(delta);
-	}
-
-	public void draw(SpriteBatch sb) {
-		sb.draw(selfIdle.getKeyFrame(time, true), imgBound.x, imgBound.y,
-				imgBound.width, imgBound.height);
+		super.act(delta);
 	}
 
 	@Override
 	public void hitBy(Item i) {
 		// TODO
 	}
-
+	
+	@Override
+	public void draw(SpriteBatch sb, float alpha) {
+		super.draw(sb, alpha);
+		if (lowSpeed) {
+			// TODO draw check circle
+		}
+	}
+	
+	public void setMoving(boolean b) {
+		moving = b;
+	}
 }

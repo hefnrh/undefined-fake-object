@@ -1,69 +1,61 @@
 package com.me.mygdxgame.item;
 
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public abstract class Item {
-	
-	protected Circle checkBound;
-	protected Rectangle imgBound;
-	protected Vector2 position;
-	protected float speedx;
-	protected float speedy;
-	
-	protected Item(Vector2 position, float checkRadius, float speedx, float speedy) {
-		this.position = position;
-		checkBound = new Circle(position.x, position.y, checkRadius);
-		this.speedx = speedx;
-		this.speedy = speedy;
-		imgBound = new Rectangle();
-	}
-	
-	protected Item(Vector2 position, float checkRadius) {
-		this(position, checkRadius, 0f, 0f);
-	}
-	
-	protected Item(float x, float y, float checkRadius, float speedx, float speedy) {
-		this(new Vector2(x, y), checkRadius, speedx, speedy);
-	}
-	
-	protected Item(float x, float y, float checkRadius) {
-		this(new Vector2(x, y), checkRadius);
-	}
-	
-	public void setPosition(float x, float y) {
-		position.x = checkBound.x = x;
-		position.y = checkBound.y = y;
-	}
-	
-	public Vector2 getPosition() {
-		return position;
+public abstract class Item extends Actor {
+
+	protected TextureRegion img;
+	protected float checkRadius;
+
+	protected Item(float x, float y, float width, float height,
+			float checkRadius, TextureRegion img) {
+		setBounds(x, y, width, height);
+		this.checkRadius = checkRadius;
+		this.img = img;
 	}
 
-	public Circle getCheckBound() {
-		return checkBound;
+	public float getCheckX() {
+		float dx = getOriginX(), dy = getOriginY();
+		float ox = getX();
+		float halfWidth = getWidth() / 2f, halfHeight = getHeight() / 2f;
+		float deg = getRotation();
+		float sin = MathUtils.sinDeg(deg), cos = MathUtils.cosDeg(deg);
+		return ox + dx - cos * (dx - halfWidth) + sin * (dy - halfHeight);
+	};
+
+	public float getCheckY() {
+		float dx = getOriginX(), dy = getOriginY();
+		float oy = getY();
+		float halfWidth = getWidth() / 2f, halfHeight = getHeight() / 2f;
+		float deg = getRotation();
+		float sin = MathUtils.sinDeg(deg), cos = MathUtils.cosDeg(deg);
+		return oy + dy - sin * (dx - halfWidth) - cos * (dy - halfHeight);
+	};
+
+	public float getCheckRadius() {
+		return checkRadius;
 	}
 
-	public Rectangle getImgBound() {
-		return imgBound;
-	}
-	
 	public boolean isHit(Item i) {
-		float dx = position.x - i.position.x;
-		float dy = position.y - i.position.y;
-		float distance = i.checkBound.radius + checkBound.radius;
+		float dx = getCheckX() - i.getCheckX();
+		float dy = getCheckY() - i.getCheckY();
+		float distance = i.checkRadius + checkRadius;
 		return dx * dx + dy * dy < distance * distance;
 	}
-	
-	public void setSpeedx(float speedx) {
-		this.speedx = speedx;
-	}
-	
-	public void setSpeedy(float speedy) {
-		this.speedy = speedy;
-	}
-	
+
 	public abstract void hitBy(Item i);
-	
+
+	public void setImg(TextureRegion img) {
+		this.img = img;
+	}
+
+	@Override
+	public void draw(SpriteBatch sb, float alpha) {
+		sb.draw(img, getX(), getY(), getOriginX(), getOriginY(), getWidth(),
+				getHeight(), getScaleX(), getScaleY(), getRotation());
+	}
+
 }

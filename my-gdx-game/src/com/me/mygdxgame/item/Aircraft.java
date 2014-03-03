@@ -1,40 +1,32 @@
 package com.me.mygdxgame.item;
 
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Aircraft extends Item {
 	
 	protected static final float RUNNING_FRAME_DURATION = 0.06f;
 	
 	protected float time = 0f;
-	protected boolean moving;
+	protected Animation selfIdle;
 	
-	protected Aircraft(Vector2 position, float checkRadius, float speedx, float speedy) {
-		super(position, checkRadius, speedx, speedy);
-		moving = true;
-	}
-	protected Aircraft(Vector2 position, float checkRadius) {
-		super(position, checkRadius);
-		moving = false;
+	protected Aircraft(float x, float y, float width, float height,
+			float checkRadius) {
+		super(x, y, width, height, checkRadius, null);
+		loadAtlas();
 	}
 	
-	public void addTime(float delta) {
+	protected abstract void loadAtlas();
+	
+	@Override
+	public void act(float delta) {
 		time += delta;
-	}
-	
-	public float getTime() {
-		return time;
-	}
-	
-	public void setMoving(boolean b) {
-		moving = b;
-	}
-	
-	public void update(float delta) {
-		time += delta;
-		if (moving) {
-			setPosition(position.x + delta * speedx, position.y + delta * speedy);
-		}
+		super.act(delta);
 	}
 
+	@Override
+	public void draw(SpriteBatch sb, float alpha) {
+		img = selfIdle.getKeyFrame(time, true);
+		super.draw(sb, alpha);
+	}
 }

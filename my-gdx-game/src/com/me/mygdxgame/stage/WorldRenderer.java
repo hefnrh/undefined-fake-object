@@ -1,18 +1,13 @@
 package com.me.mygdxgame.stage;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Self;
 
 public class WorldRenderer {
-	
-	private static final Texture img = new Texture(Gdx.files.internal("images/bullet2.jpg"));
 	
 	private SpriteBatch batch;
 	private ShapeRenderer debugRenderer;
@@ -27,21 +22,16 @@ public class WorldRenderer {
 	}
 	
 	public void draw() {
-		Rectangle bound;
 		batch.begin();
 		for (Bullet b: world.getSelfBullets()) {
-			b.draw(batch);
-			bound = b.getImgBound();
-			batch.draw(img, bound.x, bound.y, bound.width, bound.height, 0, 32, 32, 32, false, false);
+			b.draw(batch, 1);
 		}
-		world.getSelf().draw(batch);
+		world.getSelf().draw(batch, 1);
 		for (Bullet b: world.getEnemyBullets()) {
-			b.draw(batch);
-			bound = b.getImgBound();
-			batch.draw(img, bound.x, bound.y, bound.width, bound.height, 0, 0, 32, 32, false, false);
+			b.draw(batch, 1);
 		}
-		batch.end();
 		// TODO draw enemies
+		batch.end();
 		drawDebug();
 	}
 	
@@ -50,14 +40,17 @@ public class WorldRenderer {
 		debugRenderer.begin(ShapeType.Line);
 		debugRenderer.setColor(Color.RED);
 		for (Bullet b: world.getEnemyBullets()) {
-			debugRenderer.circle(b.getPosition().x, b.getPosition().y, b.getCheckBound().radius,10);
+			debugRenderer.rect(b.getX(), b.getY(), b.getWidth(), b.getHeight(), b.getOriginX(), b.getOriginY(), b.getRotation());
+			debugRenderer.circle(b.getCheckX(), b.getCheckY(), b.getCheckRadius(), 10);
 		}
 		debugRenderer.setColor(Color.GREEN);
 		for (Bullet b: world.getSelfBullets()) {
-			debugRenderer.circle(b.getPosition().x, b.getPosition().y, b.getCheckBound().radius, 10);
+			debugRenderer.rect(b.getX(), b.getY(), b.getWidth(), b.getHeight(), b.getOriginX(), b.getOriginY(), b.getRotation());
+			debugRenderer.circle(b.getCheckX(), b.getCheckY(), b.getCheckRadius(), 10);
 		}
 		debugRenderer.setColor(Color.YELLOW);
-		debugRenderer.circle(self.getPosition().x, self.getPosition().y, self.getCheckBound().radius, 10);
+		debugRenderer.rect(self.getX(), self.getY(), self.getWidth(), self.getHeight(), self.getOriginX(), self.getOriginY(), self.getRotation());
+		debugRenderer.circle(self.getCheckX(), self.getCheckY(), self.getCheckRadius(), 10);
 		debugRenderer.setColor(Color.WHITE);
 		debugRenderer.rect(0.1f, 0, World.CAMERA_WIDTH - 0.1f, World.CAMERA_HEIGHT - 0.1f);
 		debugRenderer.end();
