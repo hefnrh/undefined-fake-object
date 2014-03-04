@@ -44,7 +44,7 @@ public class WorldRenderer {
 		fps.draw(batch, String.valueOf(Gdx.graphics.getFramesPerSecond()),
 				World.CAMERA_WIDTH - 3, fps.getCapHeight());
 		batch.end();
-		// drawDebug();
+		drawDebug();
 	}
 
 	private void drawBg() {

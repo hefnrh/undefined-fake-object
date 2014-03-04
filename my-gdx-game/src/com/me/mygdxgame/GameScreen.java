@@ -85,6 +85,7 @@ public class GameScreen implements Screen {
 		resources.load("images/bullet2.jpg", Texture.class);
 		resources.load("images/self1.jpg", Texture.class);
 		resources.load("images/bg1.jpg", Texture.class);
+		resources.load("images/item.jpg", Texture.class);
 		// FIXME remove after debug
 		while (!resources.update());
 	}
@@ -158,6 +159,7 @@ public class GameScreen implements Screen {
 					int pointer, int button) {
 				wc.setSelfHorizentalDirection(Self.STOP);
 				wc.setSelfVerticalDirection(Self.STOP);
+				wc.setSelfSlow(false);
 				wc.setSelfMoving(false);
 			}
 

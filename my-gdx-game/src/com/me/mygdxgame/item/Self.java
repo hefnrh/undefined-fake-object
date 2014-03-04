@@ -8,13 +8,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Self extends Aircraft {
 
-	public static final float RADIUS = 0.375f;
+	public static final float RADIUS = 0.3f;
 	public static final float IMG_WIDTH = 2f;
 	public static final float IMG_HEIGHT = 3f;
 	public static final float HIGH_SPEED = 12f;
 	public static final float LOW_SPEED = 6f;
 	public static final float HIGH_CROSS_SPEED = 8.487f;
 	public static final float LOW_CROSS_SPEED = 4.243f;
+	public static final float ROTATE_SPEED = 25f;
 	public static final int UP = 1;
 	public static final int DOWN = -1;
 	public static final int LEFT = -1;
@@ -29,6 +30,7 @@ public class Self extends Aircraft {
 	private float speedx;
 	private float speedy;
 	private boolean moving;
+	private TextureRegion slowImg;
 
 	protected Self(float x, float y, float width, float height,
 			float checkRadius, AssetManager resources) {
@@ -42,6 +44,8 @@ public class Self extends Aircraft {
 				.split(32, 48)[0];
 		selfIdle = new Animation(RUNNING_FRAME_DURATION, frames);
 		img = selfIdle.getKeyFrame(0, true);
+		slowImg = new TextureRegion(resources.get("images/item.jpg",
+				Texture.class), 0, 16, 64, 64);
 	}
 
 	public static Self getInstance(float x, float y, AssetManager resources) {
@@ -90,7 +94,9 @@ public class Self extends Aircraft {
 	public void draw(SpriteBatch sb, float alpha) {
 		super.draw(sb, alpha);
 		if (lowSpeed) {
-			// TODO draw check circle
+			sb.draw(slowImg, getX() - IMG_WIDTH / 2f, getY() - IMG_HEIGHT / 6f,
+					IMG_WIDTH, IMG_WIDTH, IMG_WIDTH * 2, IMG_WIDTH * 2, 1, 1,
+					ROTATE_SPEED * time);
 		}
 	}
 
