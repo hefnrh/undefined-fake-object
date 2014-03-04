@@ -16,17 +16,17 @@ public class WorldController {
 
 	private World world;
 	private Self self;
-	private LinkedList<Bullet> uselessSelfBullet;
+	private LinkedList<Bullet> uselessSelfNormalBullet;
 	private LinkedList<Bullet> uselessEnemyBullet;
 	private AssetManager resources;
 	private float time;
-	
+
 	public WorldController(World world, AssetManager resources) {
 		this.world = world;
 		this.resources = resources;
 		world.setSelf(Self.getInstance(World.CAMERA_WIDTH / 2, 10f, resources));
 		self = world.getSelf();
-		uselessSelfBullet = new LinkedList<Bullet>();
+		uselessSelfNormalBullet = new LinkedList<Bullet>();
 		uselessEnemyBullet = new LinkedList<Bullet>();
 		world.setBg(resources.get("images/bg1.jpg", Texture.class));
 		time = 0;
@@ -44,9 +44,6 @@ public class WorldController {
 					Actions.rotateBy(MathUtils.random(-180, 180), 0.5f)));
 			world.addEnemyBullet(b);
 		}
-		for (int i = 0; i < 10; ++i) {
-			// TODO add self bullet
-		}
 	}
 
 	public void update(float delta) {
@@ -56,7 +53,7 @@ public class WorldController {
 		for (Bullet b : world.getEnemyBullets()) {
 			b.act(delta);
 		}
-		for (Bullet b : world.getSelfBullets()) {
+		for (Bullet b : world.getSelfNormalBullets()) {
 			b.act(delta);
 		}
 		for (Enemy e : world.getEnemies()) {
@@ -71,7 +68,8 @@ public class WorldController {
 
 	private void selfShoot(float delta) {
 		float tmp = time * 60f;
-		if (tmp < 1) return;
+		if (tmp < 1)
+			return;
 		time -= 1f / 60f;
 		TextureRegion myBulletImg = new TextureRegion(resources.get(
 				"images/self1.jpg", Texture.class), 0, 144, 16, 16);
@@ -95,11 +93,11 @@ public class WorldController {
 				break;
 			}
 		}
-		for (Bullet b : world.getSelfBullets()) {
+		for (Bullet b : world.getSelfNormalBullets()) {
 			for (Enemy enemy : world.getEnemies()) {
 				if (b.isHit(enemy)) {
 					// TODO do sth
-					uselessSelfBullet.add(b);
+					uselessSelfNormalBullet.add(b);
 					enemy.hitBy(b);
 				}
 			}
@@ -113,9 +111,9 @@ public class WorldController {
 				uselessEnemyBullet.add(b);
 			}
 		}
-		for (Bullet b : world.getSelfBullets()) {
+		for (Bullet b : world.getSelfNormalBullets()) {
 			if (b.isOutOfWorld()) {
-				uselessSelfBullet.add(b);
+				uselessSelfNormalBullet.add(b);
 			}
 		}
 		if (self.getX() < 0) {
@@ -134,8 +132,8 @@ public class WorldController {
 		for (Bullet b : uselessEnemyBullet) {
 			world.removeEnemyBullet(b);
 		}
-		for (Bullet b : uselessSelfBullet) {
-			world.removeSelfBullet(b);
+		for (Bullet b : uselessSelfNormalBullet) {
+			world.removeSelfNormalBullet(b);
 		}
 	}
 
@@ -153,13 +151,13 @@ public class WorldController {
 	public Bullet newSelfNormalBullet(float x, float y, float width,
 			float height, float checkRadius, TextureRegion img) {
 		Bullet b;
-		if (uselessSelfBullet.isEmpty()) {
+		if (uselessSelfNormalBullet.isEmpty()) {
 			b = new Bullet(x, y, width, height, checkRadius, img);
 			b.setRotation(90);
 			b.addAction(Actions.repeat(RepeatAction.FOREVER,
 					Actions.moveBy(0, 6, 0.1f)));
 		} else {
-			b = uselessSelfBullet.removeFirst();
+			b = uselessSelfNormalBullet.removeFirst();
 			b.init(x, y, width, height, checkRadius, img);
 		}
 		return b;

@@ -16,7 +16,7 @@ public class World {
 	public static final float CAMERA_HEIGHT = 48f;
 	
 	private Self self;
-	private List<Bullet> selfBullets = new LinkedList<Bullet>();
+	private List<Bullet> selfNormalBullets = new LinkedList<Bullet>();
 	private List<Bullet> enemyBullets = new LinkedList<Bullet>();
 	private List<Enemy> enemies = new LinkedList<Enemy>();
 	private Camera camera;
@@ -46,15 +46,15 @@ public class World {
 	}
 	
 	public void addSelfBullet(Bullet b) {
-		selfBullets.add(b);
+		selfNormalBullets.add(b);
 	}
 	
 	public void addEnemyBullet(Bullet b) {
 		enemyBullets.add(b);
 	}
 	
-	public void removeSelfBullet(Bullet b) {
-		selfBullets.remove(b);
+	public void removeSelfNormalBullet(Bullet b) {
+		selfNormalBullets.remove(b);
 	}
 	
 	public void removeEnemyBullet(Bullet b) {
@@ -69,8 +69,8 @@ public class World {
 		enemies.remove(e);
 	}
 	
-	public List<Bullet> getSelfBullets() {
-		return selfBullets;
+	public List<Bullet> getSelfNormalBullets() {
+		return selfNormalBullets;
 	}
 	
 	public List<Bullet> getEnemyBullets() {

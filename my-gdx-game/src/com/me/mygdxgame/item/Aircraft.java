@@ -10,10 +10,15 @@ public abstract class Aircraft extends Item {
 	
 	protected float time = 0f;
 	protected Animation selfIdle;
+	protected Animation moveLeft;
+	protected Animation moveRight;
+	protected Animation currentState;
+	protected float lastX;
 	
 	protected Aircraft(float x, float y, float width, float height,
 			float checkRadius, AssetManager resources) {
 		super(x, y, width, height, checkRadius, null);
+		lastX = x;
 		loadAtlas(resources);
 	}
 	
@@ -23,11 +28,19 @@ public abstract class Aircraft extends Item {
 	public void act(float delta) {
 		time += delta;
 		super.act(delta);
+		float currentX = getX();
+		if (lastX < currentX) {
+			currentState = moveRight;
+		} else if (lastX > currentX) {
+			currentState = moveLeft;
+		} else {
+			currentState = selfIdle;
+		}
 	}
 
 	@Override
 	public void draw(SpriteBatch sb, float alpha) {
-		img = selfIdle.getKeyFrame(time, true);
+		img = currentState.getKeyFrame(time, true);
 		super.draw(sb, alpha);
 	}
 }

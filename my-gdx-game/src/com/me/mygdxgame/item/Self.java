@@ -5,6 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 
 public class Self extends Aircraft {
 
@@ -16,6 +21,8 @@ public class Self extends Aircraft {
 	public static final float HIGH_CROSS_SPEED = 8.487f;
 	public static final float LOW_CROSS_SPEED = 4.243f;
 	public static final float ROTATE_SPEED = 25f;
+	public static final float MAX_POWER = 4f;
+	public static final float START_POWER = 1f;
 	public static final int UP = 1;
 	public static final int DOWN = -1;
 	public static final int LEFT = -1;
@@ -29,23 +36,47 @@ public class Self extends Aircraft {
 	private int horizentalDirection;
 	private float speedx;
 	private float speedy;
+	private float power;
+	private int powerLevel;
 	private boolean moving;
 	private TextureRegion slowImg;
+	private Support[] supImg;
+	private Group supGroup;
 
 	protected Self(float x, float y, float width, float height,
 			float checkRadius, AssetManager resources) {
 		super(x, y, width, height, checkRadius, resources);
+		supGroup = new Group();
+		supGroup.setPosition(0, 0);
+		supGroup.setOrigin(getCheckX(), getCheckY());
+		Texture item = resources.get("images/item.jpg", Texture.class);
+		Texture self1 = resources.get("images/self1.jpg", Texture.class);
+		slowImg = new TextureRegion(item, 0, 16, 64, 64);
+		supImg = new Support[4];
+		TextureRegion supImgTesture = new TextureRegion(self1, 64, 144, 16, 16);
+		supImg[0] = new Support(getX() + IMG_WIDTH / 4f, getY() + IMG_WIDTH
+				* 2f, supImgTesture);
+		supImg[1] = new Support(getX() + IMG_WIDTH * 1.5f, getY() + IMG_WIDTH
+				/ 2f, supImgTesture);
+		supImg[2] = new Support(getX() + IMG_WIDTH / 4f, getY() - IMG_WIDTH
+				* 0.75f, supImgTesture);
+		supImg[3] = new Support(getX() - IMG_WIDTH, getY() + IMG_WIDTH / 2f,
+				supImgTesture);
+		setPower(3);
+		lowSpeed = false;
 	}
 
 	@Override
 	protected void loadAtlas(AssetManager resources) {
-		TextureRegion[] frames = new TextureRegion(resources.get(
-				"images/self1.jpg", Texture.class), 0, 0, 256, 48)
-				.split(32, 48)[0];
+		Texture self1 = resources.get("images/self1.jpg", Texture.class);
+		TextureRegion[] frames = new TextureRegion(self1, 0, 0, 256, 48).split(
+				32, 48)[0];
 		selfIdle = new Animation(RUNNING_FRAME_DURATION, frames);
+		frames = new TextureRegion(self1, 128, 48, 128, 48).split(32, 48)[0];
+		moveLeft = new Animation(RUNNING_FRAME_DURATION, frames);
+		frames = new TextureRegion(self1, 128, 96, 128, 48).split(32, 48)[0];
+		moveRight = new Animation(RUNNING_FRAME_DURATION, frames);
 		img = selfIdle.getKeyFrame(0, true);
-		slowImg = new TextureRegion(resources.get("images/item.jpg",
-				Texture.class), 0, 16, 64, 64);
 	}
 
 	public static Self getInstance(float x, float y, AssetManager resources) {
@@ -64,11 +95,27 @@ public class Self extends Aircraft {
 	}
 
 	public void setLowSpeed(boolean b) {
+		if (b == lowSpeed)
+			return;
+		float dis = IMG_WIDTH / 4f;
+		if (b) {
+			supImg[0].addAction(Actions.moveBy(0, -dis, 0.1f));
+			supImg[1].addAction(Actions.moveBy(-dis, 0, 0.1f));
+			supImg[2].addAction(Actions.moveBy(0, dis, 0.1f));
+			supImg[3].addAction(Actions.moveBy(dis, 0, 0.1f));
+		} else {
+			supImg[0].addAction(Actions.moveBy(0, dis, 0.1f));
+			supImg[1].addAction(Actions.moveBy(dis, 0, 0.1f));
+			supImg[2].addAction(Actions.moveBy(0, -dis, 0.1f));
+			supImg[3].addAction(Actions.moveBy(-dis, 0, 0.1f));
+		}
 		lowSpeed = b;
 	}
 
 	@Override
 	public void act(float delta) {
+		lastX = getX();
+		supGroup.act(delta);
 		if (moving) {
 			float speedScale;
 			if (lowSpeed) {
@@ -80,7 +127,9 @@ public class Self extends Aircraft {
 			}
 			speedx = speedScale * horizentalDirection;
 			speedy = speedScale * verticalDirection;
-			translate(delta * speedx, delta * speedy);
+			float dx = delta * speedx, dy = delta * speedy;
+			translate(dx, dy);
+			supGroup.translate(dx, dy);
 		}
 		super.act(delta);
 	}
@@ -93,6 +142,7 @@ public class Self extends Aircraft {
 	@Override
 	public void draw(SpriteBatch sb, float alpha) {
 		super.draw(sb, alpha);
+		supGroup.draw(sb, alpha);
 		if (lowSpeed) {
 			sb.draw(slowImg, getX() - IMG_WIDTH / 2f, getY() - IMG_HEIGHT / 6f,
 					IMG_WIDTH, IMG_WIDTH, IMG_WIDTH * 2, IMG_WIDTH * 2, 1, 1,
@@ -102,5 +152,56 @@ public class Self extends Aircraft {
 
 	public void setMoving(boolean b) {
 		moving = b;
+	}
+
+	public void setPower(float power) {
+		this.power = power;
+		for (int i = 0; i < powerLevel; ++i) {
+			supGroup.removeActor(supImg[i]);
+		}
+		supGroup.setRotation(0);
+		powerLevel = MathUtils.floor(power);
+		for (int i = 0; i < powerLevel; ++i) {
+			supGroup.addActor(supImg[i]);
+		}
+		supGroup.setRotation(45 * (powerLevel - 1));
+	}
+
+	public void addPower(float delta) {
+		power += delta;
+		if (power >= MAX_POWER) {
+			power = MAX_POWER;
+		}
+		if (power >= powerLevel + 1) {
+			supGroup.addActor(supImg[powerLevel]);
+			supGroup.addAction(Actions.rotateBy(45, 0.125f));
+			powerLevel += 1;
+		}
+	}
+
+	public float getPower() {
+		return power;
+	}
+
+	class Support extends Actor {
+		TextureRegion img;
+		static final float WIDTH = 1f;
+		static final float HEIGHT = 1f;
+		static final float DEG_PER_SEC = 60f;
+
+		Support(float x, float y, TextureRegion img) {
+			setBounds(x, y, WIDTH, HEIGHT);
+			setOrigin(WIDTH / 2f, HEIGHT / 2f);
+			this.img = img;
+			addAction(Actions.repeat(RepeatAction.FOREVER,
+					Actions.rotateBy(DEG_PER_SEC, 1f)));
+		}
+
+		@Override
+		public void draw(SpriteBatch sb, float alpha) {
+			sb.draw(img, getX(), getY(), getOriginX(), getOriginY(),
+					getWidth(), getHeight(), getScaleX(), getScaleY(),
+					getRotation());
+		}
 	}
 }

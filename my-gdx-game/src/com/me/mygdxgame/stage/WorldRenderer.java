@@ -33,7 +33,7 @@ public class WorldRenderer {
 	public void draw() {
 		batch.begin();
 		drawBg();
-		for (Bullet b : world.getSelfBullets()) {
+		for (Bullet b : world.getSelfNormalBullets()) {
 			b.draw(batch, 1);
 		}
 		world.getSelf().draw(batch, 1);
@@ -66,7 +66,7 @@ public class WorldRenderer {
 					b.getCheckRadius(), 10);
 		}
 		debugRenderer.setColor(Color.GREEN);
-		for (Bullet b : world.getSelfBullets()) {
+		for (Bullet b : world.getSelfNormalBullets()) {
 			debugRenderer.rect(b.getX(), b.getY(), b.getWidth(), b.getHeight(),
 					b.getOriginX(), b.getOriginY(), b.getRotation());
 			debugRenderer.circle(b.getCheckX(), b.getCheckY(),
