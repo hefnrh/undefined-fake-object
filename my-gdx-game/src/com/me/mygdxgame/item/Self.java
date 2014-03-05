@@ -84,19 +84,19 @@ public abstract class Self extends Aircraft {
 
 	@Override
 	public void setPosition(float x, float y) {
-		supGroup.setPosition(x, y);
+		supGroup.setPosition(x + IMG_WIDTH / 2f, y + IMG_HEIGHT / 2f);
 		super.setPosition(x, y);
 	}
 	
 	@Override
 	public void setX(float x) {
-		supGroup.setX(x);
+		supGroup.setX(x + IMG_WIDTH / 2f);
 		super.setX(x);
 	}
 	
 	@Override
 	public void setY(float y) {
-		supGroup.setY(y);
+		supGroup.setY(y + IMG_HEIGHT / 2f);
 		super.setY(y);
 	}
 	
