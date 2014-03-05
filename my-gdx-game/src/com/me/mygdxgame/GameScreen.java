@@ -8,9 +8,11 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.me.mygdxgame.item.Self;
@@ -29,17 +31,17 @@ public class GameScreen implements Screen {
 	private final int GL_HEIGHT;
 	private AssetManager resources;
 
-	private ImageButton up;
-	private ImageButton down;
-	private ImageButton left;
-	private ImageButton right;
-	private ImageButton upLeft;
-	private ImageButton upRight;
-	private ImageButton downLeft;
-	private ImageButton downRight;
-	private ImageButton slow;
+	private Button up;
+	private Button down;
+	private Button left;
+	private Button right;
+	private Button upLeft;
+	private Button upRight;
+	private Button downLeft;
+	private Button downRight;
+	private Button slow;
 	private ClickListener listener;
-	
+
 	private Music bgm;
 
 	public GameScreen(Game parent) {
@@ -72,6 +74,7 @@ public class GameScreen implements Screen {
 		wr = new WorldRenderer(world);
 		inputStage = new Stage();
 		loadButtons();
+		loadImage();
 		Gdx.input.setInputProcessor(inputStage);
 		bgm = resources.get("sound/bgm.mp3", Music.class);
 		bgm.setLooping(true);
@@ -86,13 +89,25 @@ public class GameScreen implements Screen {
 		resources.load("images/self1.jpg", Texture.class);
 		resources.load("images/bg1.jpg", Texture.class);
 		resources.load("images/item.jpg", Texture.class);
+		resources.load("images/sidebar.jpg", Texture.class);
 		// FIXME remove after debug
-		while (!resources.update());
+		while (!resources.update())
+			;
 	}
-	
+
+	private void loadImage() {
+		Image power = new Image(new TextureRegionDrawable(new TextureRegion(
+				resources.get("images/sidebar.jpg", Texture.class), 256, 54,
+				64, 18)));
+		power.setSize(QUARTER_GL_WIDTH, GL_HEIGHT / 2f);
+		power.setPosition(QUARTER_GL_WIDTH * 3, GL_HEIGHT - power.getHeight());
+		inputStage.addActor(power);
+	}
+
 	private void loadButtons() {
 
-		TextureAtlas atlas = resources.get("images/textures/button.pack", TextureAtlas.class);
+		TextureAtlas atlas = resources.get("images/textures/button.pack",
+				TextureAtlas.class);
 		final float WH = (QUARTER_GL_WIDTH - 10f) / 3f;
 		final float MARGIN = 5f;
 
@@ -162,46 +177,46 @@ public class GameScreen implements Screen {
 				wc.setSelfMoving(false);
 			}
 
-			private boolean isOverButton(ImageButton b, float x, float y) {
+			private boolean isOverButton(Button b, float x, float y) {
 				float bx = b.getX();
 				float by = b.getY();
 				return x > bx && x < bx + b.getWidth() && y > by
 						&& y < by + b.getHeight();
 			}
 		};
-		up = new ImageButton(new TextureRegionDrawable(atlas.findRegion("u")));
+		up = new Button(new TextureRegionDrawable(atlas.findRegion("u")));
 		up.setSize(WH, WH);
 		up.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH, MARGIN + WH * 2);
 		up.addListener(listener);
 		inputStage.addActor(up);
 
-		down = new ImageButton(new TextureRegionDrawable(atlas.findRegion("d")));
+		down = new Button(new TextureRegionDrawable(atlas.findRegion("d")));
 		down.setSize(WH, WH);
 		down.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH, MARGIN);
 		down.addListener(listener);
 		inputStage.addActor(down);
 
-		left = new ImageButton(new TextureRegionDrawable(atlas.findRegion("l")));
+		left = new Button(new TextureRegionDrawable(atlas.findRegion("l")));
 		left.setSize(WH, WH);
 		left.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN + WH);
 		left.addListener(listener);
 		inputStage.addActor(left);
 
-		right = new ImageButton(
+		right = new Button(
 				new TextureRegionDrawable(atlas.findRegion("r")));
 		right.setSize(WH, WH);
 		right.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN + WH);
 		right.addListener(listener);
 		inputStage.addActor(right);
 
-		upLeft = new ImageButton(new TextureRegionDrawable(
+		upLeft = new Button(new TextureRegionDrawable(
 				atlas.findRegion("ul")));
 		upLeft.setSize(WH, WH);
 		upLeft.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN + WH * 2);
 		upLeft.addListener(listener);
 		inputStage.addActor(upLeft);
 
-		upRight = new ImageButton(new TextureRegionDrawable(
+		upRight = new Button(new TextureRegionDrawable(
 				atlas.findRegion("ur")));
 		upRight.setSize(WH, WH);
 		upRight.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN + WH
@@ -209,21 +224,21 @@ public class GameScreen implements Screen {
 		upRight.addListener(listener);
 		inputStage.addActor(upRight);
 
-		downLeft = new ImageButton(new TextureRegionDrawable(
+		downLeft = new Button(new TextureRegionDrawable(
 				atlas.findRegion("dl")));
 		downLeft.setSize(WH, WH);
 		downLeft.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN);
 		downLeft.addListener(listener);
 		inputStage.addActor(downLeft);
 
-		downRight = new ImageButton(new TextureRegionDrawable(
+		downRight = new Button(new TextureRegionDrawable(
 				atlas.findRegion("dr")));
 		downRight.setSize(WH, WH);
 		downRight.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN);
 		downRight.addListener(listener);
 		inputStage.addActor(downRight);
 
-		slow = new ImageButton(new TextureRegionDrawable(
+		slow = new Button(new TextureRegionDrawable(
 				atlas.findRegion("slow")));
 		slow.setSize(WH, WH);
 		slow.setPosition((QUARTER_GL_WIDTH - slow.getWidth()) / 2f + MARGIN,
