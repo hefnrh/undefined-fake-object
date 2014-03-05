@@ -87,5 +87,6 @@ public class WorldRenderer {
 	public void dispose() {
 		batch.dispose();
 		debugRenderer.dispose();
+		fps.dispose();
 	}
 }

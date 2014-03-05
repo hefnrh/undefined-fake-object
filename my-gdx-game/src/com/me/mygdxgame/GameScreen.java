@@ -92,8 +92,7 @@ public class GameScreen implements Screen {
 	
 	private void loadButtons() {
 
-		TextureAtlas atlas = new TextureAtlas(
-				Gdx.files.internal("images/textures/button.pack"));
+		TextureAtlas atlas = resources.get("images/textures/button.pack", TextureAtlas.class);
 		final float WH = (QUARTER_GL_WIDTH - 10f) / 3f;
 		final float MARGIN = 5f;
 
