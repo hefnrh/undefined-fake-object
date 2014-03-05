@@ -5,14 +5,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.me.mygdxgame.item.Self;
@@ -26,10 +30,15 @@ public class GameScreen implements Screen {
 	private WorldController wc;
 	private WorldRenderer wr;
 	private Stage inputStage;
-	private final int GL_WIDTH;
-	private final int QUARTER_GL_WIDTH;
-	private final int GL_HEIGHT;
+	public final int GL_WIDTH;
+	public final int QUARTER_GL_WIDTH;
+	public final int GL_HEIGHT;
+	public final float WH;
+	public static final float MARGIN = 5f;
 	private AssetManager resources;
+	private BitmapFont font;
+	private Label powerLabel;
+	private Label pointLabel;
 
 	private Button up;
 	private Button down;
@@ -48,6 +57,7 @@ public class GameScreen implements Screen {
 		GL_WIDTH = Gdx.graphics.getWidth();
 		QUARTER_GL_WIDTH = GL_WIDTH >> 2;
 		GL_HEIGHT = Gdx.graphics.getHeight();
+		WH = (QUARTER_GL_WIDTH - 10f) / 3f;
 	}
 
 	@Override
@@ -70,11 +80,11 @@ public class GameScreen implements Screen {
 	public void show() {
 		loadRescources();
 		world = new World();
-		wc = new WorldController(world, resources);
+		wc = new WorldController(world, resources, this);
 		wr = new WorldRenderer(world);
 		inputStage = new Stage();
-		loadButtons();
 		loadImage();
+		loadButtons();
 		Gdx.input.setInputProcessor(inputStage);
 		bgm = resources.get("sound/bgm.mp3", Music.class);
 		bgm.setLooping(true);
@@ -96,20 +106,44 @@ public class GameScreen implements Screen {
 	}
 
 	private void loadImage() {
+		Texture sidebar = resources.get("images/sidebar.jpg");
+		Image bgLeft = new Image(new TextureRegionDrawable(new TextureRegion(
+				sidebar, 0, 0, 256, 480)));
+		bgLeft.setBounds(0, 0, QUARTER_GL_WIDTH, GL_HEIGHT);
+		inputStage.addActor(bgLeft);
+		Image bgRight = new Image(new TextureRegionDrawable(new TextureRegion(
+				sidebar, 0, 0, 256, 480)));
+		bgRight.setBounds(QUARTER_GL_WIDTH * 3, 0, QUARTER_GL_WIDTH, GL_HEIGHT);
+		inputStage.addActor(bgRight);
 		Image power = new Image(new TextureRegionDrawable(new TextureRegion(
-				resources.get("images/sidebar.jpg", Texture.class), 256, 54,
-				64, 18)));
-		power.setSize(QUARTER_GL_WIDTH, GL_HEIGHT / 2f);
-		power.setPosition(QUARTER_GL_WIDTH * 3, GL_HEIGHT - power.getHeight());
+				sidebar, 256, 54, 84, 18)));
+		power.setSize(WH, WH * 9f / 38f);
+		power.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN,
+				GL_HEIGHT - power.getHeight() - MARGIN);
 		inputStage.addActor(power);
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+				Gdx.files.internal("font/font.ttf"));
+		font = generator.generateFont((int) power.getHeight(), "1234567890./",
+				false);
+		font.setColor(Color.WHITE);
+		generator.dispose();
+		powerLabel = new Label("1.00/4.00", new Label.LabelStyle(font,
+				Color.WHITE));
+		powerLabel.setPosition(power.getX() + power.getWidth(), power.getY());
+		inputStage.addActor(powerLabel);
+		Image point = new Image(new TextureRegionDrawable(new TextureRegion(
+				sidebar, 328, 36, 84, 18)));
+		point.setSize(WH, WH * 9f / 38f);
+		point.setPosition(power.getX(),
+				power.getY() - MARGIN - point.getHeight());
+		inputStage.addActor(point);
+
 	}
 
 	private void loadButtons() {
 
 		TextureAtlas atlas = resources.get("images/textures/button.pack",
 				TextureAtlas.class);
-		final float WH = (QUARTER_GL_WIDTH - 10f) / 3f;
-		final float MARGIN = 5f;
 
 		listener = new ClickListener() {
 			@Override
@@ -202,50 +236,54 @@ public class GameScreen implements Screen {
 		left.addListener(listener);
 		inputStage.addActor(left);
 
-		right = new Button(
-				new TextureRegionDrawable(atlas.findRegion("r")));
+		right = new Button(new TextureRegionDrawable(atlas.findRegion("r")));
 		right.setSize(WH, WH);
 		right.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN + WH);
 		right.addListener(listener);
 		inputStage.addActor(right);
 
-		upLeft = new Button(new TextureRegionDrawable(
-				atlas.findRegion("ul")));
+		upLeft = new Button(new TextureRegionDrawable(atlas.findRegion("ul")));
 		upLeft.setSize(WH, WH);
 		upLeft.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN + WH * 2);
 		upLeft.addListener(listener);
 		inputStage.addActor(upLeft);
 
-		upRight = new Button(new TextureRegionDrawable(
-				atlas.findRegion("ur")));
+		upRight = new Button(new TextureRegionDrawable(atlas.findRegion("ur")));
 		upRight.setSize(WH, WH);
 		upRight.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN + WH
 				* 2);
 		upRight.addListener(listener);
 		inputStage.addActor(upRight);
 
-		downLeft = new Button(new TextureRegionDrawable(
-				atlas.findRegion("dl")));
+		downLeft = new Button(new TextureRegionDrawable(atlas.findRegion("dl")));
 		downLeft.setSize(WH, WH);
 		downLeft.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN, MARGIN);
 		downLeft.addListener(listener);
 		inputStage.addActor(downLeft);
 
-		downRight = new Button(new TextureRegionDrawable(
-				atlas.findRegion("dr")));
+		downRight = new Button(
+				new TextureRegionDrawable(atlas.findRegion("dr")));
 		downRight.setSize(WH, WH);
 		downRight.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN + WH * 2, MARGIN);
 		downRight.addListener(listener);
 		inputStage.addActor(downRight);
 
-		slow = new Button(new TextureRegionDrawable(
-				atlas.findRegion("slow")));
-		slow.setSize(WH, WH);
+		slow = new Button(new TextureRegionDrawable(atlas.findRegion("slow")));
+		slow.setSize(WH * 3, WH);
 		slow.setPosition((QUARTER_GL_WIDTH - slow.getWidth()) / 2f + MARGIN,
 				MARGIN);
 		slow.addListener(listener);
 		inputStage.addActor(slow);
 		// TODO add bomb
+	}
+
+	public void updatePower(int power) {
+		powerLabel.setText(String.format("%d.%02d/4.00", power / 100,
+				power % 100));
+	}
+
+	public void updatePoint(int point) {
+		pointLabel.setText(String.valueOf(point));
 	}
 
 	@Override
@@ -271,6 +309,7 @@ public class GameScreen implements Screen {
 		wr.dispose();
 		inputStage.dispose();
 		resources.dispose();
+		font.dispose();
 	}
 
 }

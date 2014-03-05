@@ -1,16 +1,15 @@
 package com.me.mygdxgame.item;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 
-public class Self extends Aircraft {
+public abstract class Self extends Aircraft {
 
 	public static final float RADIUS = 0.3f;
 	public static final float IMG_WIDTH = 2f;
@@ -30,55 +29,46 @@ public class Self extends Aircraft {
 
 	private static Self self;
 
-	private boolean lowSpeed;
-	private int verticalDirection;
-	private int horizentalDirection;
-	private float speedx;
-	private float speedy;
-	private int power;
-	private int powerLevel;
-	private boolean moving;
-	private TextureRegion slowImg;
-	private Support[] supImg;
-	private Group supGroup;
+	protected boolean lowSpeed;
+	protected int verticalDirection;
+	protected int horizentalDirection;
+	protected float speedx;
+	protected float speedy;
+	protected int power;
+	protected int powerLevel;
+	protected int point;
+	protected boolean moving;
+	protected TextureRegion slowImg;
+	protected TextureRegion normalBulletImg;
+	protected TextureRegion specialBulletImg;
+	protected Support[] supImg;
+	protected Group supGroup;
+	protected LinkedList<Bullet> uselessNormalBullet;
+	protected LinkedList<Bullet> uselessSpecialBullet;
+	
 
 	protected Self(float x, float y, float width, float height,
 			float checkRadius, AssetManager resources) {
 		super(x, y, width, height, checkRadius, resources);
-		supGroup = new Group();
-		supGroup.setPosition(x, y);
-		supGroup.setOrigin(width / 2f, height / 2f);
 		Texture item = resources.get("images/item.jpg", Texture.class);
-		Texture self1 = resources.get("images/self1.jpg", Texture.class);
 		slowImg = new TextureRegion(item, 0, 16, 64, 64);
-		supImg = new Support[4];
-		TextureRegion supImgTesture = new TextureRegion(self1, 64, 144, 16, 16);
-		supImg[0] = new Support(IMG_WIDTH / 4f, IMG_WIDTH * 2f, supImgTesture);
-		supImg[1] = new Support(IMG_WIDTH * 1.5f, IMG_WIDTH / 2f, supImgTesture);
-		supImg[2] = new Support(IMG_WIDTH / 4f, -IMG_WIDTH * 0.75f,
-				supImgTesture);
-		supImg[3] = new Support(-IMG_WIDTH, IMG_WIDTH / 2f, supImgTesture);
-		setPower(START_POWER);
+		supGroup = new Group();
+		supGroup.setPosition(x + IMG_WIDTH / 2f, y + IMG_HEIGHT / 2f);
+		supGroup.setOrigin(0f, 0f);
 		lowSpeed = false;
+		uselessNormalBullet = new LinkedList<Bullet>();
+		uselessSpecialBullet = new LinkedList<Bullet>();
+		loadSupport(resources);
+		initSupport();
 	}
 
-	@Override
-	protected void loadAtlas(AssetManager resources) {
-		Texture self1 = resources.get("images/self1.jpg", Texture.class);
-		TextureRegion[] frames = new TextureRegion(self1, 0, 0, 256, 48).split(
-				32, 48)[0];
-		selfIdle = new Animation(RUNNING_FRAME_DURATION, frames);
-		frames = new TextureRegion(self1, 128, 48, 128, 48).split(32, 48)[0];
-		moveLeft = new Animation(RUNNING_FRAME_DURATION, frames);
-		frames = new TextureRegion(self1, 128, 96, 128, 48).split(32, 48)[0];
-		moveRight = new Animation(RUNNING_FRAME_DURATION, frames);
-		img = selfIdle.getKeyFrame(0, true);
-	}
-
-	public static Self getInstance(float x, float y, AssetManager resources) {
+	protected abstract void loadSupport(AssetManager resources);
+	
+	public static Self getInstance(float x, float y, AssetManager resources, String name) {
 		if (self != null)
 			return self;
-		self = new Self(x, y, IMG_WIDTH, IMG_HEIGHT, RADIUS, resources);
+		if (self == null || self.equals("reimu"))
+			self = new Reimu(x, y, IMG_WIDTH, IMG_HEIGHT, RADIUS, resources);
 		return self;
 	}
 
@@ -90,23 +80,7 @@ public class Self extends Aircraft {
 		horizentalDirection = i;
 	}
 
-	public void setLowSpeed(boolean b) {
-		if (b == lowSpeed)
-			return;
-		float dis = IMG_WIDTH / 4f;
-		if (b) {
-			supImg[0].addAction(Actions.moveBy(0, -dis, 0.1f));
-			supImg[1].addAction(Actions.moveBy(-dis, 0, 0.1f));
-			supImg[2].addAction(Actions.moveBy(0, dis, 0.1f));
-			supImg[3].addAction(Actions.moveBy(dis, 0, 0.1f));
-		} else {
-			supImg[0].addAction(Actions.moveBy(0, dis, 0.1f));
-			supImg[1].addAction(Actions.moveBy(dis, 0, 0.1f));
-			supImg[2].addAction(Actions.moveBy(0, -dis, 0.1f));
-			supImg[3].addAction(Actions.moveBy(-dis, 0, 0.1f));
-		}
-		lowSpeed = b;
-	}
+	public abstract void setLowSpeed(boolean b);
 
 	@Override
 	public void setPosition(float x, float y) {
@@ -116,7 +90,7 @@ public class Self extends Aircraft {
 	
 	@Override
 	public void setX(float x) {
-		supGroup.setX(x);;
+		supGroup.setX(x);
 		super.setX(x);
 	}
 	
@@ -170,15 +144,14 @@ public class Self extends Aircraft {
 
 	public void setPower(int power) {
 		this.power = power;
-		for (int i = 0; i < powerLevel; ++i) {
+		for (int i = 1; i < powerLevel; ++i) {
 			supGroup.removeActor(supImg[i]);
 		}
-		supGroup.setRotation(0);
+		initSupport();
 		powerLevel = power / 100;
-		for (int i = 0; i < powerLevel; ++i) {
-			supGroup.addActor(supImg[i]);
+		for (int i = 1; i < powerLevel; ++i) {
+			upgradeSupport(i);
 		}
-		supGroup.setRotation(45 * (powerLevel - 1));
 	}
 
 	public void addPower(int delta) {
@@ -187,17 +160,24 @@ public class Self extends Aircraft {
 			power = MAX_POWER;
 		}
 		if (power >= (powerLevel + 1) * 100) {
-			supGroup.addActor(supImg[powerLevel]);
-			supGroup.addAction(Actions.rotateBy(45, 0.125f));
+			upgradeSupport(powerLevel);
 			powerLevel += 1;
 		}
 	}
-
-	public float getPower() {
+	
+	protected abstract void upgradeSupport(int i);
+	
+	protected abstract void initSupport();
+	
+	public int getPower() {
 		return power;
 	}
-
-	class Support extends Actor {
+	
+	public int getPoint() {
+		return point;
+	}
+	
+	abstract class Support extends Actor {
 		TextureRegion img;
 		static final float WIDTH = 1f;
 		static final float HEIGHT = 1f;
@@ -207,15 +187,42 @@ public class Self extends Aircraft {
 			setBounds(x, y, WIDTH, HEIGHT);
 			setOrigin(WIDTH / 2f, HEIGHT / 2f);
 			this.img = img;
-			addAction(Actions.repeat(RepeatAction.FOREVER,
-					Actions.rotateBy(DEG_PER_SEC, 1f)));
+			setAction();
 		}
-
+		
+		public abstract void setAction();
+		
 		@Override
 		public void draw(SpriteBatch sb, float alpha) {
 			sb.draw(img, getX(), getY(), getOriginX(), getOriginY(),
 					getWidth(), getHeight(), getScaleX(), getScaleY(),
 					getRotation());
 		}
+	}
+	
+	public abstract Bullet newNormalBullet(float x, float y);
+	
+	public abstract Bullet newSpecialBullet(float x, float y);
+	
+	public abstract float getSupportCenterX(Support s);
+	
+	public abstract float getSupportCenterY(Support s);
+	
+	public void recycleNormalBullet(Bullet b) {
+		b.setInUse(false);
+		uselessNormalBullet.add(b);
+	}
+	
+	public void recycleSpecialBullet(Bullet b) {
+		b.setInUse(false);
+		uselessSpecialBullet.add(b);
+	}
+	
+	public LinkedList<Bullet> getUselessNormalBullet() {
+		return uselessNormalBullet;
+	}
+	
+	public LinkedList<Bullet> getUselessSpecialBullet() {
+		return uselessSpecialBullet;
 	}
 }

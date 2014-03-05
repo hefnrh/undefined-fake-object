@@ -23,8 +23,9 @@ public class WorldRenderer {
 		debugRenderer = new ShapeRenderer();
 		batch.setProjectionMatrix(world.getCamera().combined);
 		debugRenderer.setProjectionMatrix(world.getCamera().combined);
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font/font.ttf"));
-		fps = generator.generateFont(32, "0123456789", false);
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+				Gdx.files.internal("font/font.ttf"));
+		fps = generator.generateFont(32, "1234567890", false);
 		fps.setColor(Color.WHITE);
 		fps.setScale(World.CAMERA_HEIGHT / Gdx.graphics.getHeight());
 		generator.dispose();

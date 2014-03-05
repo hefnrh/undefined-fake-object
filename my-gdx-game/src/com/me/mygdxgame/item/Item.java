@@ -3,7 +3,10 @@ package com.me.mygdxgame.item;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.stage.World;
 
 public abstract class Item extends Actor {
@@ -11,6 +14,10 @@ public abstract class Item extends Actor {
 	protected TextureRegion img;
 	protected float checkRadius;
 	private float imgRadius;
+	private Item toTrace = null;
+	private float traceSpeed;
+	private boolean inUse;
+	private Action action;
 
 	protected Item(float x, float y, float width, float height,
 			float checkRadius, TextureRegion img) {
@@ -78,5 +85,34 @@ public abstract class Item extends Actor {
 		float x = getX(), y = getY();
 		return x + imgRadius < 0 || x - imgRadius > World.CAMERA_WIDTH
 				|| y + imgRadius < 0 || y - imgRadius > World.CAMERA_HEIGHT;
+	}
+
+	public void setToTrace(Item i, float speed) {
+		toTrace = i;
+		traceSpeed = speed;
+	}
+
+	@Override
+	public void act(float delta) {
+		if (toTrace != null && toTrace.inUse) {
+			trace(delta);
+		}
+		super.act(delta);
+	}
+
+	protected void trace(float delta) {
+		float vx = toTrace.getCheckX() - getCheckX();
+		float vy = toTrace.getCheckY() - getCheckY();
+		float v = (float) Math.sqrt(vx * vx + vy * vy);
+		if (action != null) {
+			removeAction(action);
+		}
+		action = Actions.repeat(RepeatAction.FOREVER,
+				Actions.moveBy(traceSpeed * vx / v, traceSpeed * vy / v));
+		addAction(action);
+	}
+
+	public void setInUse(boolean b) {
+		inUse = b;
 	}
 }

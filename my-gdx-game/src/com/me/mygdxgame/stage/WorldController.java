@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
+import com.me.mygdxgame.GameScreen;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
 import com.me.mygdxgame.item.Self;
@@ -16,17 +17,19 @@ public class WorldController {
 
 	private World world;
 	private Self self;
-	private LinkedList<Bullet> uselessSelfNormalBullet;
 	private LinkedList<Bullet> uselessEnemyBullet;
 	private AssetManager resources;
+	private GameScreen parent;
 	private float time;
 
-	public WorldController(World world, AssetManager resources) {
+	public WorldController(World world, AssetManager resources,
+			GameScreen parent) {
 		this.world = world;
 		this.resources = resources;
-		world.setSelf(Self.getInstance(World.CAMERA_WIDTH / 2, 10f, resources));
+		this.parent = parent;
+		world.setSelf(Self.getInstance(World.CAMERA_WIDTH / 2, 10f, resources,
+				"reimu"));
 		self = world.getSelf();
-		uselessSelfNormalBullet = new LinkedList<Bullet>();
 		uselessEnemyBullet = new LinkedList<Bullet>();
 		world.setBg(resources.get("images/bg1.jpg", Texture.class));
 		time = 0;
@@ -71,15 +74,10 @@ public class WorldController {
 		if (tmp < 1)
 			return;
 		time -= 1f / 60f;
-		TextureRegion myBulletImg = new TextureRegion(resources.get(
-				"images/self1.jpg", Texture.class), 0, 144, 16, 16);
-		Bullet myBullet1 = newSelfNormalBullet(
-				self.getX() + Self.IMG_WIDTH / 2,
-				self.getY() + Self.IMG_HEIGHT, Self.IMG_WIDTH / 2f,
-				Self.IMG_WIDTH / 2f, Self.RADIUS, myBulletImg);
-		Bullet myBullet2 = newSelfNormalBullet(self.getX() + Self.IMG_WIDTH,
-				self.getY() + Self.IMG_HEIGHT, Self.IMG_WIDTH / 2f,
-				Self.IMG_WIDTH / 2f, Self.RADIUS, myBulletImg);
+		Bullet myBullet1 = self.newNormalBullet(self.getX() + Self.IMG_WIDTH
+				/ 2, self.getY() + Self.IMG_HEIGHT);
+		Bullet myBullet2 = self.newNormalBullet(self.getX() + Self.IMG_WIDTH,
+				self.getY() + Self.IMG_HEIGHT);
 		world.addSelfBullet(myBullet1);
 		world.addSelfBullet(myBullet2);
 	}
@@ -97,7 +95,7 @@ public class WorldController {
 			for (Enemy enemy : world.getEnemies()) {
 				if (b.isHit(enemy)) {
 					// TODO do sth
-					uselessSelfNormalBullet.add(b);
+					self.recycleNormalBullet(b);
 					enemy.hitBy(b);
 				}
 			}
@@ -113,7 +111,7 @@ public class WorldController {
 		}
 		for (Bullet b : world.getSelfNormalBullets()) {
 			if (b.isOutOfWorld()) {
-				uselessSelfNormalBullet.add(b);
+				self.recycleNormalBullet(b);
 			}
 		}
 		if (self.getX() < 0) {
@@ -132,7 +130,7 @@ public class WorldController {
 		for (Bullet b : uselessEnemyBullet) {
 			world.removeEnemyBullet(b);
 		}
-		for (Bullet b : uselessSelfNormalBullet) {
+		for (Bullet b : self.getUselessNormalBullet()) {
 			world.removeSelfNormalBullet(b);
 		}
 	}
@@ -146,21 +144,6 @@ public class WorldController {
 			b.init(x, y, width, height, checkRadius, img);
 			return b;
 		}
-	}
-
-	public Bullet newSelfNormalBullet(float x, float y, float width,
-			float height, float checkRadius, TextureRegion img) {
-		Bullet b;
-		if (uselessSelfNormalBullet.isEmpty()) {
-			b = new Bullet(x, y, width, height, checkRadius, img);
-			b.setRotation(90);
-			b.addAction(Actions.repeat(RepeatAction.FOREVER,
-					Actions.moveBy(0, 6, 0.1f)));
-		} else {
-			b = uselessSelfNormalBullet.removeFirst();
-			b.init(x, y, width, height, checkRadius, img);
-		}
-		return b;
 	}
 
 	public void setSelfVerticalDirection(int i) {
