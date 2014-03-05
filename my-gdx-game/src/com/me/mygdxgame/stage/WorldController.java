@@ -20,7 +20,8 @@ public class WorldController {
 	private LinkedList<Bullet> uselessEnemyBullet;
 	private AssetManager resources;
 	private GameScreen parent;
-	private float time;
+	private float normalTime;
+	private float specialTime;
 
 	public WorldController(World world, AssetManager resources,
 			GameScreen parent) {
@@ -28,12 +29,13 @@ public class WorldController {
 		this.resources = resources;
 		this.parent = parent;
 		world.setSelf(Self.getInstance(World.CAMERA_WIDTH / 2, 10f, resources,
-				"reimu"));
+				"reimu", world));
 		self = world.getSelf();
 		uselessEnemyBullet = new LinkedList<Bullet>();
 		world.setBg(resources.get("images/bg1.jpg", Texture.class));
-		time = 0;
-		addDebugBullets();
+		normalTime = 0;
+		specialTime = 0;
+//		addDebugBullets();
 	}
 
 	private void addDebugBullets() {
@@ -50,13 +52,17 @@ public class WorldController {
 	}
 
 	public void update(float delta) {
-		time += delta;
+		normalTime += delta;
+		specialTime += delta;
 		world.updateTime(delta);
 		world.getSelf().act(delta);
 		for (Bullet b : world.getEnemyBullets()) {
 			b.act(delta);
 		}
 		for (Bullet b : world.getSelfNormalBullets()) {
+			b.act(delta);
+		}
+		for (Bullet b : world.getSelfSpecialBullets()) {
 			b.act(delta);
 		}
 		for (Enemy e : world.getEnemies()) {
@@ -66,36 +72,63 @@ public class WorldController {
 		detectOutOfWorld();
 		recycleUselessBullets();
 		// TODO recycle enemies
-		selfShoot(delta);
+		selfNormalShoot();
+		selfSpecialShoot();
 	}
 
-	private void selfShoot(float delta) {
-		float tmp = time * 60f;
+	private void selfNormalShoot() {
+		float tmp = normalTime * 15f;
 		if (tmp < 1)
 			return;
-		time -= 1f / 60f;
-		Bullet myBullet1 = self.newNormalBullet(self.getX() + Self.IMG_WIDTH
-				/ 2, self.getY() + Self.IMG_HEIGHT);
-		Bullet myBullet2 = self.newNormalBullet(self.getX() + Self.IMG_WIDTH,
+		normalTime -= 1f / 15f;
+		Bullet myBullet;
+		// self bullet will be rotated before shooting, so set X + height
+		myBullet = self.newNormalBullet(
+				self.getX() + self.getNormalBulletHeight(), self.getY()
+						+ Self.IMG_HEIGHT);
+		world.addSelfNormalBullet(myBullet);
+		myBullet = self.newNormalBullet(self.getX() + Self.IMG_WIDTH,
 				self.getY() + Self.IMG_HEIGHT);
-		world.addSelfBullet(myBullet1);
-		world.addSelfBullet(myBullet2);
+		world.addSelfNormalBullet(myBullet);
+	}
+	
+	private void selfSpecialShoot() {
+		float tmp = specialTime * 4f;
+		if (tmp < 1)
+			return;
+		specialTime -= 0.25f;
+		Bullet myBullet;
+		for (int i = 0, j = self.getPower() / 100; i < j; ++i) {
+			myBullet = self.newSpecialBullet(
+					self.getSupportCenterX(i) - self.getSpecialBulletHeight()
+							/ 2f, self.getSupportCenterY(i));
+			world.addSelfSpecialBullet(myBullet);
+		}
 	}
 
 	private void detectCollision() {
 		for (Bullet b : world.getEnemyBullets()) {
 			if (b.isHit(self)) {
 				// TODO do sth
+				b.clearActions();
+				b.setInUse(false);
 				uselessEnemyBullet.add(b);
 				self.hitBy(b);
 				break;
 			}
 		}
-		for (Bullet b : world.getSelfNormalBullets()) {
-			for (Enemy enemy : world.getEnemies()) {
+		for (Enemy enemy : world.getEnemies()) {
+			for (Bullet b : world.getSelfNormalBullets()) {
 				if (b.isHit(enemy)) {
 					// TODO do sth
 					self.recycleNormalBullet(b);
+					enemy.hitBy(b);
+				}
+			}
+			for (Bullet b : world.getSelfSpecialBullets()) {
+				if (b.isHit(enemy)) {
+					// TODO do sth
+					self.recycleSpecialBullet(b);
 					enemy.hitBy(b);
 				}
 			}
@@ -106,12 +139,18 @@ public class WorldController {
 		for (Bullet b : world.getEnemyBullets()) {
 			if (b.isOutOfWorld()) {
 				b.clearActions();
+				b.setInUse(false);
 				uselessEnemyBullet.add(b);
 			}
 		}
 		for (Bullet b : world.getSelfNormalBullets()) {
 			if (b.isOutOfWorld()) {
 				self.recycleNormalBullet(b);
+			}
+		}
+		for (Bullet b : world.getSelfSpecialBullets()) {
+			if (b.isOutOfWorld()) {
+				self.recycleSpecialBullet(b);
 			}
 		}
 		if (self.getX() < 0) {
@@ -133,12 +172,15 @@ public class WorldController {
 		for (Bullet b : self.getUselessNormalBullet()) {
 			world.removeSelfNormalBullet(b);
 		}
+		for (Bullet b : self.getUselessSpecialBullet()) {
+			world.removeSelfSpecialBullet(b);
+		}
 	}
 
 	public Bullet newEnemyBullet(float x, float y, float width, float height,
 			float checkRadius, TextureRegion img) {
 		if (uselessEnemyBullet.isEmpty()) {
-			return new Bullet(x, y, width, height, checkRadius, img);
+			return new Bullet(x, y, width, height, checkRadius, img, world);
 		} else {
 			Bullet b = uselessEnemyBullet.removeFirst();
 			b.init(x, y, width, height, checkRadius, img);

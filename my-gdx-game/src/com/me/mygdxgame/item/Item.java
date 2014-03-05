@@ -13,15 +13,17 @@ public abstract class Item extends Actor {
 
 	protected TextureRegion img;
 	protected float checkRadius;
-	private float imgRadius;
-	private Item toTrace = null;
-	private float traceSpeed;
-	private boolean inUse;
-	private Action action;
+	protected float imgRadius;
+	protected Item toTrace = null;
+	protected float traceSpeed;
+	protected boolean inUse;
+	protected Action action;
+	protected World world;
 
 	protected Item(float x, float y, float width, float height,
-			float checkRadius, TextureRegion img) {
+			float checkRadius, TextureRegion img, World world) {
 		init(x, y, width, height, checkRadius, img);
+		this.world = world;
 	}
 
 	public float getCheckX() {
@@ -107,12 +109,21 @@ public abstract class Item extends Actor {
 		if (action != null) {
 			removeAction(action);
 		}
+		float f = traceSpeed * delta / v;
 		action = Actions.repeat(RepeatAction.FOREVER,
-				Actions.moveBy(traceSpeed * vx / v, traceSpeed * vy / v));
+				Actions.moveBy(f * vx, f * vy));
 		addAction(action);
 	}
 
 	public void setInUse(boolean b) {
 		inUse = b;
+	}
+	
+	public void setAction(Action a) {
+		if (action != null) {
+			removeAction(action);
+		}
+		action = a;
+		addAction(action);
 	}
 }

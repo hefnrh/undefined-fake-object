@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.me.mygdxgame.stage.World;
 
 public abstract class Self extends Aircraft {
 
@@ -48,8 +49,8 @@ public abstract class Self extends Aircraft {
 	
 
 	protected Self(float x, float y, float width, float height,
-			float checkRadius, AssetManager resources) {
-		super(x, y, width, height, checkRadius, resources);
+			float checkRadius, AssetManager resources, World parent) {
+		super(x, y, width, height, checkRadius, resources, parent);
 		Texture item = resources.get("images/item.jpg", Texture.class);
 		slowImg = new TextureRegion(item, 0, 16, 64, 64);
 		supGroup = new Group();
@@ -59,16 +60,16 @@ public abstract class Self extends Aircraft {
 		uselessNormalBullet = new LinkedList<Bullet>();
 		uselessSpecialBullet = new LinkedList<Bullet>();
 		loadSupport(resources);
-		initSupport();
+		setPower(100);
 	}
 
 	protected abstract void loadSupport(AssetManager resources);
 	
-	public static Self getInstance(float x, float y, AssetManager resources, String name) {
+	public static Self getInstance(float x, float y, AssetManager resources, String name, World world) {
 		if (self != null)
 			return self;
 		if (self == null || self.equals("reimu"))
-			self = new Reimu(x, y, IMG_WIDTH, IMG_HEIGHT, RADIUS, resources);
+			self = new Reimu(x, y, IMG_WIDTH, IMG_HEIGHT, RADIUS, resources, world);
 		return self;
 	}
 
@@ -177,36 +178,50 @@ public abstract class Self extends Aircraft {
 		return point;
 	}
 	
-	abstract class Support extends Actor {
-		TextureRegion img;
+	public abstract class Support extends Actor {
+		
 		static final float WIDTH = 1f;
 		static final float HEIGHT = 1f;
 		static final float DEG_PER_SEC = 60f;
-
-		Support(float x, float y, TextureRegion img) {
+		
+		TextureRegion img;
+		
+		protected Support(float x, float y,TextureRegion img) {
 			setBounds(x, y, WIDTH, HEIGHT);
 			setOrigin(WIDTH / 2f, HEIGHT / 2f);
-			this.img = img;
 			setAction();
+			this.img = img;
 		}
-		
+
 		public abstract void setAction();
 		
 		@Override
 		public void draw(SpriteBatch sb, float alpha) {
-			sb.draw(img, getX(), getY(), getOriginX(), getOriginY(),
-					getWidth(), getHeight(), getScaleX(), getScaleY(),
-					getRotation());
+			sb.draw(img, getX(), getY(), getOriginX(), getOriginY(), getWidth(),
+					getHeight(), getScaleX(), getScaleY(), getRotation());
 		}
+		
 	}
 	
 	public abstract Bullet newNormalBullet(float x, float y);
 	
 	public abstract Bullet newSpecialBullet(float x, float y);
 	
-	public abstract float getSupportCenterX(Support s);
+	public abstract float getSupportCenterX(int index);
 	
-	public abstract float getSupportCenterY(Support s);
+	public abstract float getSupportCenterY(int index);
+	
+	public abstract float getNormalBulletWidth();
+	
+	public abstract float getNormalBulletHeight();
+	
+	public abstract float getSpecialBulletWidth();
+	
+	public abstract float getSpecialBulletHeight();
+	
+	public Support[] getSupport() {
+		return supImg;
+	}
 	
 	public void recycleNormalBullet(Bullet b) {
 		b.setInUse(false);
@@ -215,6 +230,7 @@ public abstract class Self extends Aircraft {
 	
 	public void recycleSpecialBullet(Bullet b) {
 		b.setInUse(false);
+		b.clearActions();
 		uselessSpecialBullet.add(b);
 	}
 	

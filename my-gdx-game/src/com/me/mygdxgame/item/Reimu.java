@@ -1,24 +1,31 @@
 package com.me.mygdxgame.item;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
+import com.me.mygdxgame.stage.World;
 
 public class Reimu extends Self {
 
 	public static final float NORMAL_BULLET_WIDTH = Self.IMG_WIDTH / 2f;
-	public static final float NORMAL_BULLET_HEIGHT = Self.IMG_WIDTH / 2f;
+	public static final float NORMAL_BULLET_HEIGHT = NORMAL_BULLET_WIDTH;
 	public static final float NORMAL_BULLET_RADIUS = Self.RADIUS;
+	public static final float SPECIAL_BULLET_WIDTH = NORMAL_BULLET_WIDTH;
+	public static final float SPECIAL_BULLET_HEIGHT = NORMAL_BULLET_HEIGHT;
+	public static final float SPECIAL_BULLET_RADIUS = NORMAL_BULLET_RADIUS;
 
 	public Reimu(float x, float y, float width, float height,
-			float checkRadius, AssetManager resources) {
-		super(x, y, width, height, checkRadius, resources);
-		normalBulletImg = new TextureRegion(resources.get("images/self1.jpg",
-				Texture.class), 0, 144, 16, 16);
-		// TODO load special bullet image
+			float checkRadius, AssetManager resources, World parent) {
+		super(x, y, width, height, checkRadius, resources, parent);
+		Texture self1 = resources.get("images/self1.jpg", Texture.class);
+		normalBulletImg = new TextureRegion(self1, 0, 144, 16, 16);
+		specialBulletImg = new TextureRegion(self1, 0, 160, 16, 16);
 	}
 
 	@Override
@@ -43,9 +50,10 @@ public class Reimu extends Self {
 				supImgTesture);
 		supImg[1] = new ReimuSupport(IMG_WIDTH, -ReimuSupport.HEIGHT / 2f,
 				supImgTesture);
-		supImg[2] = new ReimuSupport(-ReimuSupport.WIDTH / 2f, -IMG_WIDTH - ReimuSupport.HEIGHT,
-				supImgTesture);
-		supImg[3] = new ReimuSupport(-IMG_WIDTH - ReimuSupport.WIDTH, -ReimuSupport.HEIGHT / 2f, supImgTesture);
+		supImg[2] = new ReimuSupport(-ReimuSupport.WIDTH / 2f, -IMG_WIDTH
+				- ReimuSupport.HEIGHT, supImgTesture);
+		supImg[3] = new ReimuSupport(-IMG_WIDTH - ReimuSupport.WIDTH,
+				-ReimuSupport.HEIGHT / 2f, supImgTesture);
 	}
 
 	@Override
@@ -78,13 +86,13 @@ public class Reimu extends Self {
 		supGroup.setRotation(0f);
 		supGroup.addActor(supImg[0]);
 	}
-	
+
 	@Override
 	public Bullet newNormalBullet(float x, float y) {
 		Bullet b;
 		if (uselessNormalBullet.isEmpty()) {
 			b = new Bullet(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
-					NORMAL_BULLET_RADIUS, normalBulletImg);
+					NORMAL_BULLET_RADIUS, normalBulletImg, world);
 			b.setRotation(90);
 			b.addAction(Actions.repeat(RepeatAction.FOREVER,
 					Actions.moveBy(0, 6, 0.1f)));
@@ -98,21 +106,44 @@ public class Reimu extends Self {
 
 	@Override
 	public Bullet newSpecialBullet(float x, float y) {
-		// TODO
-		return null;
+		Bullet b;
+		if (uselessSpecialBullet.isEmpty()) {
+			b = new Bullet(x, y, SPECIAL_BULLET_WIDTH, SPECIAL_BULLET_HEIGHT,
+					SPECIAL_BULLET_RADIUS, specialBulletImg, world);
+			b.setOrigin(ReimuSupport.WIDTH / 2f, ReimuSupport.HEIGHT / 2f);
+		} else {
+			b = uselessSpecialBullet.removeFirst();
+			b.init(x, y, SPECIAL_BULLET_WIDTH, SPECIAL_BULLET_HEIGHT,
+					SPECIAL_BULLET_RADIUS, specialBulletImg);
+		}
+		b.addAction(Actions.repeat(RepeatAction.FOREVER,
+				Actions.rotateBy(30, 0.1f)));
+		LinkedList<Enemy> enemies = world.getEnemies();
+		if (enemies.isEmpty()) {
+			b.setAction(Actions.repeat(RepeatAction.FOREVER,
+					Actions.moveBy(0, 4, 0.1f)));
+		} else {
+			b.setToTrace(enemies.peekFirst(), 40f);
+		}
+		return b;
 	}
-	
+
 	@Override
-	public float getSupportCenterX(Support s) {
+	public float getSupportCenterX(int index) {
 		float deg = supGroup.getRotation();
-		float x = supGroup.getX() + s.getX() + s.getWidth();
-		float y = supGroup.getY() + s.getY() + s.getHeight();
-		return 0;
+		float sin = MathUtils.sinDeg(deg), cos = MathUtils.cosDeg(deg);
+		float x = supImg[index].getX() + ReimuSupport.WIDTH / 2f, y = supImg[index]
+				.getY() + ReimuSupport.HEIGHT / 2f;
+		return supGroup.getX() + cos * x - sin * y;
 	}
-	
+
 	@Override
-	public float getSupportCenterY(Support s) {
-		return 0;
+	public float getSupportCenterY(int index) {
+		float deg = supGroup.getRotation();
+		float sin = MathUtils.sinDeg(deg), cos = MathUtils.cosDeg(deg);
+		float x = supImg[index].getX() + ReimuSupport.WIDTH / 2f, y = supImg[index]
+				.getY() + ReimuSupport.HEIGHT / 2f;
+		return supGroup.getY() + cos * y + sin * x;
 	}
 
 	class ReimuSupport extends Support {
@@ -126,5 +157,26 @@ public class Reimu extends Self {
 			addAction(Actions.repeat(RepeatAction.FOREVER,
 					Actions.rotateBy(DEG_PER_SEC, 1f)));
 		}
+
+	}
+
+	@Override
+	public float getNormalBulletWidth() {
+		return NORMAL_BULLET_WIDTH;
+	}
+
+	@Override
+	public float getNormalBulletHeight() {
+		return NORMAL_BULLET_HEIGHT;
+	}
+
+	@Override
+	public float getSpecialBulletWidth() {
+		return SPECIAL_BULLET_WIDTH;
+	}
+
+	@Override
+	public float getSpecialBulletHeight() {
+		return SPECIAL_BULLET_HEIGHT;
 	}
 }

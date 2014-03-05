@@ -3,6 +3,7 @@ package com.me.mygdxgame.item;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.me.mygdxgame.stage.World;
 
 public abstract class Aircraft extends Item {
 	
@@ -16,8 +17,8 @@ public abstract class Aircraft extends Item {
 	protected float lastX;
 	
 	protected Aircraft(float x, float y, float width, float height,
-			float checkRadius, AssetManager resources) {
-		super(x, y, width, height, checkRadius, null);
+			float checkRadius, AssetManager resources, World world) {
+		super(x, y, width, height, checkRadius, null, world);
 		lastX = x;
 		loadAtlas(resources);
 	}

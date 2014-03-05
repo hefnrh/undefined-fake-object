@@ -37,6 +37,9 @@ public class WorldRenderer {
 		for (Bullet b : world.getSelfNormalBullets()) {
 			b.draw(batch, 1);
 		}
+		for (Bullet b : world.getSelfSpecialBullets()) {
+			b.draw(batch, 1);
+		}
 		world.getSelf().draw(batch, 1);
 		for (Bullet b : world.getEnemyBullets()) {
 			b.draw(batch, 1);
@@ -45,7 +48,7 @@ public class WorldRenderer {
 		fps.draw(batch, String.valueOf(Gdx.graphics.getFramesPerSecond()),
 				World.CAMERA_WIDTH - 3, fps.getCapHeight());
 		batch.end();
-		drawDebug();
+//		drawDebug();
 	}
 
 	private void drawBg() {
@@ -79,6 +82,10 @@ public class WorldRenderer {
 				self.getRotation());
 		debugRenderer.circle(self.getCheckX(), self.getCheckY(),
 				self.getCheckRadius(), 10);
+		for (int i = 0; i < 4; ++i) {
+			debugRenderer.circle(self.getSupportCenterX(i),
+					self.getSupportCenterY(i), 0.5f, 10);
+		}
 		debugRenderer.setColor(Color.WHITE);
 		debugRenderer.rect(0.1f, 0, World.CAMERA_WIDTH - 0.1f,
 				World.CAMERA_HEIGHT - 0.1f);
