@@ -7,7 +7,7 @@ import com.me.mygdxgame.stage.World;
 
 public abstract class PItem extends Item {
 
-	public static final float TRACE_SPEED = 45f;
+	public static final float TRACE_SPEED = 15f;
 	
 	protected PItem(float x, float y, float width, float height,
 			float checkRadius, TextureRegion img, World world) {

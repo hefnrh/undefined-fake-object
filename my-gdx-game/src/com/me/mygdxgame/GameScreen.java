@@ -27,7 +27,7 @@ import com.me.mygdxgame.stage.WorldRenderer;
 public class GameScreen implements Screen {
 
 	public static final float MARGIN = 5f;
-	
+
 	private World world;
 	private WorldController wc;
 	private WorldRenderer wr;
@@ -129,8 +129,9 @@ public class GameScreen implements Screen {
 				false);
 		font.setColor(Color.WHITE);
 		generator.dispose();
-		powerLabel = new Label("1.00/4.00", new Label.LabelStyle(font,
-				Color.WHITE));
+		Label.LabelStyle style = new Label.LabelStyle(font,
+				Color.WHITE);
+		powerLabel = new Label("1.00/4.00", style);
 		powerLabel.setPosition(power.getX() + power.getWidth(), power.getY());
 		inputStage.addActor(powerLabel);
 		Image point = new Image(new TextureRegionDrawable(new TextureRegion(
@@ -139,7 +140,9 @@ public class GameScreen implements Screen {
 		point.setPosition(power.getX(),
 				power.getY() - MARGIN - point.getHeight());
 		inputStage.addActor(point);
-
+		pointLabel = new Label("0", style);
+		pointLabel.setPosition(point.getX() + point.getWidth(), point.getY());
+		inputStage.addActor(pointLabel);
 	}
 
 	private void loadButtons() {

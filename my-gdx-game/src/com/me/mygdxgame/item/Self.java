@@ -160,6 +160,10 @@ public abstract class Self extends Aircraft {
 		}
 	}
 	
+	public void addPoint(int delta) {
+		point += delta;
+	}
+	
 	protected abstract void upgradeSupport(int i);
 	
 	protected abstract void initSupport();

@@ -19,7 +19,7 @@ public class Reimu extends Self {
 	public static final float SPECIAL_BULLET_WIDTH = NORMAL_BULLET_WIDTH;
 	public static final float SPECIAL_BULLET_HEIGHT = NORMAL_BULLET_HEIGHT;
 	public static final float SPECIAL_BULLET_RADIUS = NORMAL_BULLET_RADIUS;
-	public static final float ITEM_RANGE = 2f;
+	public static final float ITEM_RANGE = 3f;
 
 	private float normalTime;
 	private float specialTime;

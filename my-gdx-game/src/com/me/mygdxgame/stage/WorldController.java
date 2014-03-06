@@ -12,6 +12,7 @@ import com.me.mygdxgame.GameScreen;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
 import com.me.mygdxgame.item.PItem;
+import com.me.mygdxgame.item.PointItem;
 import com.me.mygdxgame.item.PowerItem;
 import com.me.mygdxgame.item.Self;
 
@@ -53,8 +54,12 @@ public class WorldController {
 	}
 
 	private void addDebugItem() {
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 100; ++i) {
 			world.addPowerItem(PowerItem.newPowerItem(MathUtils.random(0, 40),
+					MathUtils.random(36, 48), resources, world));
+		}
+		for (int i = 0; i < 100; ++i) {
+			world.addPointItem(PointItem.newPointItem(MathUtils.random(0, 40),
 					MathUtils.random(36, 48), resources, world));
 		}
 	}
@@ -79,6 +84,9 @@ public class WorldController {
 			e.act(delta);
 		}
 		for (PowerItem p : world.getPowerItems()) {
+			p.act(delta);
+		}
+		for (PointItem p : world.getPointItems()) {
 			p.act(delta);
 		}
 		detectCollision();
@@ -121,6 +129,15 @@ public class WorldController {
 				p.recycle();
 			}
 		}
+		for (PointItem p : world.getPointItems()) {
+			if (self.itemInRange(p) && p.getTraceTarget() == null) {
+				p.setToTrace(self, PItem.TRACE_SPEED);
+			} else if (self.isHit(p)) {
+				p.hit(self);
+				parent.updatePoint(self.getPoint());
+				p.recycle();
+			}
+		}
 	}
 
 	private void detectOutOfWorld() {
@@ -148,6 +165,11 @@ public class WorldController {
 			}
 		}
 		for (PowerItem p : world.getPowerItems()) {
+			if (p.isOutOfWorld()) {
+				p.recycle();
+			}
+		}
+		for (PointItem p : world.getPointItems()) {
 			if (p.isOutOfWorld()) {
 				p.recycle();
 			}
@@ -180,7 +202,9 @@ public class WorldController {
 		for (PowerItem p : PowerItem.uselessPowerItem) {
 			world.removePowerItem(p);
 		}
-		// TODO point items
+		for (PointItem p : PointItem.uselessPointItem) {
+			world.removePointItem(p);
+		}
 	}
 
 	private void recycleUselessEnemies() {

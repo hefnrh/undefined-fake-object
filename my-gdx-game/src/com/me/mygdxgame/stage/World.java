@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
+import com.me.mygdxgame.item.PointItem;
 import com.me.mygdxgame.item.PowerItem;
 import com.me.mygdxgame.item.Self;
 
@@ -21,6 +22,7 @@ public class World {
 	private LinkedList<Bullet> enemyBullets = new LinkedList<Bullet>();
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
 	private LinkedList<PowerItem> powerItems = new LinkedList<PowerItem>();
+	private LinkedList<PointItem> pointItems = new LinkedList<PointItem>();
 	private Camera camera;
 	private Texture bg;
 	private float time;
@@ -62,6 +64,10 @@ public class World {
 	public void addPowerItem(PowerItem p) {
 		powerItems.add(p);
 	}
+	
+	public void addPointItem(PointItem p) {
+		pointItems.add(p);
+	}
 
 	public void removeSelfNormalBullet(Bullet b) {
 		selfNormalBullets.remove(b);
@@ -79,6 +85,10 @@ public class World {
 		powerItems.remove(p);
 	}
 
+	public void removePointItem(PointItem p) {
+		pointItems.remove(p);
+	}
+	
 	public void addEnemy(Enemy e) {
 		enemies.add(e);
 	}
@@ -107,6 +117,10 @@ public class World {
 		return powerItems;
 	}
 	
+	public LinkedList<PointItem> getPointItems() {
+		return pointItems;
+	}
+	
 	public Camera getCamera() {
 		return camera;
 	}
@@ -118,4 +132,5 @@ public class World {
 	public float getTime() {
 		return time;
 	}
+
 }
