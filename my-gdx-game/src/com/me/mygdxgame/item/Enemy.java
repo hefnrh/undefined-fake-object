@@ -33,4 +33,14 @@ public abstract class Enemy extends Aircraft {
 	public int getHp() {
 		return hp;
 	}
+	
+	public void removeHp(int delta) {
+		hp -= delta;
+	}
+	
+	public abstract void aimShoot(float delta, Bullet b, float speed);
+	
+	public abstract void randomShoot(float delta, Bullet b, float speed);
+	
+	public abstract void recycle();
 }

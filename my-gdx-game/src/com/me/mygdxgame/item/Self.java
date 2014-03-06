@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.me.mygdxgame.stage.World;
@@ -119,6 +120,7 @@ public abstract class Self extends Aircraft {
 			supGroup.translate(dx, dy);
 		}
 		super.act(delta);
+		shoot(delta, null, null);
 	}
 
 	@Override
@@ -230,7 +232,7 @@ public abstract class Self extends Aircraft {
 	}
 	
 	@Override
-	protected void shoot(float delta) {
+	public void shoot(float delta, Bullet b, Action a) {
 		normalShoot(delta);
 		specialShoot(delta);
 	}

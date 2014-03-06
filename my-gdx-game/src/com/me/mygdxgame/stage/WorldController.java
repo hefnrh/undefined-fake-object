@@ -13,6 +13,7 @@ import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
 import com.me.mygdxgame.item.PItem;
 import com.me.mygdxgame.item.PointItem;
+import com.me.mygdxgame.item.PowerElf;
 import com.me.mygdxgame.item.PowerItem;
 import com.me.mygdxgame.item.Self;
 
@@ -20,13 +21,14 @@ public class WorldController {
 
 	private World world;
 	private Self self;
-	private LinkedList<Enemy> uselessEnemies;
+	private LinkedList<Enemy> enemyBuffer;
 	private LinkedList<Bullet> enemyBulletBuffer;
 	private LinkedList<Bullet> selfNormalBulletBuffer;
 	private LinkedList<Bullet> selfSpecialBulletBuffer;
 	private LinkedList<PItem> itemBuffer;
 	private AssetManager resources;
 	private GameScreen parent;
+	private float time;
 
 	public WorldController(World world, AssetManager resources,
 			GameScreen parent) {
@@ -36,7 +38,7 @@ public class WorldController {
 		world.setSelf(Self.getInstance(World.CAMERA_WIDTH / 2, 10f, resources,
 				"reimu", world));
 		self = world.getSelf();
-		uselessEnemies = new LinkedList<Enemy>();
+		enemyBuffer = new LinkedList<Enemy>();
 		enemyBulletBuffer = new LinkedList<Bullet>();
 		selfNormalBulletBuffer = new LinkedList<Bullet>();
 		selfSpecialBulletBuffer = new LinkedList<Bullet>();
@@ -44,7 +46,8 @@ public class WorldController {
 		world.setBg(resources.get("images/bg1.jpg", Texture.class));
 		// addDebugBullets();
 		addDebugEnemies();
-		addDebugItem();
+		// addDebugItem();
+		time = 0;
 	}
 
 	private void addDebugBullets() {
@@ -71,7 +74,22 @@ public class WorldController {
 	}
 
 	private void addDebugEnemies() {
-		// TODO
+		Enemy e;
+		for (int i = 0; i < 5; ++i) {
+			e = PowerElf.newPowerElf(MathUtils.random(0, 40), 48, resources, world, 10);
+			e.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(0, -4.8f, 1f)));
+			world.addEnemy(e);
+		}
+		for (int i = 0; i < 5; ++i) {
+			e = PowerElf.newPowerElf(-PowerElf.WIDTH, MathUtils.random(36, 48), resources, world, 10);
+			e.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(4.8f, 0f, 1f)));
+			world.addEnemy(e);
+		}
+		for (int i = 0; i < 5; ++i) {
+			e = PowerElf.newPowerElf(40f, MathUtils.random(36, 48), resources, world, 10);
+			e.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(-4.8f, 0f, 1f)));
+			world.addEnemy(e);
+		}
 	}
 
 	public void update(float delta) {
@@ -104,7 +122,6 @@ public class WorldController {
 			if (b.isHit(self)) {
 				// TODO do sth
 				b.clearActions();
-				b.setInUse(false);
 				enemyBulletBuffer.add(b);
 				break;
 			}
@@ -112,15 +129,26 @@ public class WorldController {
 		for (Enemy enemy : world.getEnemies()) {
 			for (Bullet b : world.getSelfNormalBullets()) {
 				if (b.isHit(enemy)) {
-					// TODO do sth
+					enemy.removeHp(1);
+					if (enemy.getHp() <= 0) {
+						enemy.dead();
+						enemyBuffer.add(enemy);
+					}
 					selfNormalBulletBuffer.add(b);
 				}
 			}
 			for (Bullet b : world.getSelfSpecialBullets()) {
 				if (b.isHit(enemy)) {
-					// TODO do sth
+					enemy.removeHp(1);
+					if (enemy.getHp() <= 0) {
+						enemy.dead();
+						enemyBuffer.add(enemy);
+					}
 					selfSpecialBulletBuffer.add(b);
 				}
+			}
+			if (self.isHit(enemy)) {
+				// TODO
 			}
 		}
 		for (PItem p : world.getItems()) {
@@ -154,9 +182,7 @@ public class WorldController {
 		}
 		for (Enemy e : world.getEnemies()) {
 			if (e.isOutOfWorld()) {
-				e.clearActions();
-				e.setInUse(false);
-				uselessEnemies.add(e);
+				enemyBuffer.add(e);
 			}
 		}
 		for (PItem p : world.getItems()) {
@@ -205,8 +231,11 @@ public class WorldController {
 	}
 
 	private void recycleUselessEnemies() {
-		for (Enemy e : uselessEnemies) {
+		Enemy e;
+		while (!enemyBuffer.isEmpty()) {
+			e = enemyBuffer.removeFirst();
 			world.removeEnemy(e);
+			e.recycle();
 		}
 	}
 
