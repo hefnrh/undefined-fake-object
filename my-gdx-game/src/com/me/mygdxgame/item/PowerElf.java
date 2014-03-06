@@ -21,7 +21,7 @@ public class PowerElf extends Enemy {
 	public void dead() {
 		PowerItem power = powerItems.get(0);
 		power.setPosition(getCheckX(), getCheckY());
-		world.addPowerItem(power);
+		world.addItem(power);
 		setInUse(false);
 	}
 

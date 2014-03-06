@@ -21,6 +21,7 @@ public abstract class Aircraft extends Item {
 		super(x, y, width, height, checkRadius, null, world);
 		lastX = x;
 		loadAtlas(resources);
+		inUse = true;
 	}
 	
 	protected abstract void loadAtlas(AssetManager resources);

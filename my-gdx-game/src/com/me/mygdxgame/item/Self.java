@@ -58,8 +58,7 @@ public abstract class Self extends Aircraft {
 		supGroup.setOrigin(0f, 0f);
 		lowSpeed = false;
 		loadSupport(resources);
-		setPower(100);
-		inUse = true;
+		setPower(START_POWER);
 	}
 
 	protected abstract void loadSupport(AssetManager resources);
@@ -222,12 +221,10 @@ public abstract class Self extends Aircraft {
 	}
 	
 	public static void recycleNormalBullet(Bullet b) {
-		b.setInUse(false);
 		uselessNormalBullet.add(b);
 	}
 	
 	public static void recycleSpecialBullet(Bullet b) {
-		b.setInUse(false);
 		b.clearActions();
 		uselessSpecialBullet.add(b);
 	}

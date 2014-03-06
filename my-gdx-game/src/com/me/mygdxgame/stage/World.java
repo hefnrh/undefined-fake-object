@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
-import com.me.mygdxgame.item.PointItem;
-import com.me.mygdxgame.item.PowerItem;
+import com.me.mygdxgame.item.PItem;
 import com.me.mygdxgame.item.Self;
 
 public class World {
@@ -21,8 +20,7 @@ public class World {
 	private LinkedList<Bullet> selfSpecialBullets = new LinkedList<Bullet>();
 	private LinkedList<Bullet> enemyBullets = new LinkedList<Bullet>();
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
-	private LinkedList<PowerItem> powerItems = new LinkedList<PowerItem>();
-	private LinkedList<PointItem> pointItems = new LinkedList<PointItem>();
+	private LinkedList<PItem> items = new LinkedList<PItem>();
 	private Camera camera;
 	private Texture bg;
 	private float time;
@@ -61,14 +59,14 @@ public class World {
 		enemyBullets.add(b);
 	}
 	
-	public void addPowerItem(PowerItem p) {
-		powerItems.add(p);
+	public void addItem(PItem p) {
+		items.add(p);
 	}
 	
-	public void addPointItem(PointItem p) {
-		pointItems.add(p);
+	public void addEnemy(Enemy e) {
+		enemies.add(e);
 	}
-
+	
 	public void removeSelfNormalBullet(Bullet b) {
 		selfNormalBullets.remove(b);
 	}
@@ -81,18 +79,10 @@ public class World {
 		enemyBullets.remove(b);
 	}
 	
-	public void removePowerItem(PowerItem p) {
-		powerItems.remove(p);
-	}
-
-	public void removePointItem(PointItem p) {
-		pointItems.remove(p);
+	public void removeItem(PItem p) {
+		items.remove(p);
 	}
 	
-	public void addEnemy(Enemy e) {
-		enemies.add(e);
-	}
-
 	public void removeEnemy(Enemy e) {
 		enemies.remove(e);
 	}
@@ -113,12 +103,8 @@ public class World {
 		return enemies;
 	}
 
-	public LinkedList<PowerItem> getPowerItems() {
-		return powerItems;
-	}
-	
-	public LinkedList<PointItem> getPointItems() {
-		return pointItems;
+	public LinkedList<PItem> getItems() {
+		return items;
 	}
 	
 	public Camera getCamera() {

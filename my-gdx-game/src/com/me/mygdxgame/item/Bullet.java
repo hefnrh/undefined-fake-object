@@ -24,5 +24,10 @@ public class Bullet extends Item {
 			return b;
 		}
 	}
-
+	
+	public static void recycleEnemyBullet(Bullet b) {
+		b.clearActions();
+		uselessEnemyBullet.add(b);
+	}
+	
 }

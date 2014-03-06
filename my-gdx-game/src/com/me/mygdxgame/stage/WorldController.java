@@ -21,6 +21,10 @@ public class WorldController {
 	private World world;
 	private Self self;
 	private LinkedList<Enemy> uselessEnemies;
+	private LinkedList<Bullet> enemyBulletBuffer;
+	private LinkedList<Bullet> selfNormalBulletBuffer;
+	private LinkedList<Bullet> selfSpecialBulletBuffer;
+	private LinkedList<PItem> itemBuffer;
 	private AssetManager resources;
 	private GameScreen parent;
 
@@ -33,6 +37,10 @@ public class WorldController {
 				"reimu", world));
 		self = world.getSelf();
 		uselessEnemies = new LinkedList<Enemy>();
+		enemyBulletBuffer = new LinkedList<Bullet>();
+		selfNormalBulletBuffer = new LinkedList<Bullet>();
+		selfSpecialBulletBuffer = new LinkedList<Bullet>();
+		itemBuffer = new LinkedList<PItem>();
 		world.setBg(resources.get("images/bg1.jpg", Texture.class));
 		// addDebugBullets();
 		addDebugEnemies();
@@ -55,11 +63,9 @@ public class WorldController {
 
 	private void addDebugItem() {
 		for (int i = 0; i < 100; ++i) {
-			world.addPowerItem(PowerItem.newPowerItem(MathUtils.random(0, 40),
+			world.addItem(PowerItem.newPowerItem(MathUtils.random(0, 40),
 					MathUtils.random(36, 48), resources, world));
-		}
-		for (int i = 0; i < 100; ++i) {
-			world.addPointItem(PointItem.newPointItem(MathUtils.random(0, 40),
+			world.addItem(PointItem.newPointItem(MathUtils.random(0, 40),
 					MathUtils.random(36, 48), resources, world));
 		}
 	}
@@ -83,10 +89,7 @@ public class WorldController {
 		for (Enemy e : world.getEnemies()) {
 			e.act(delta);
 		}
-		for (PowerItem p : world.getPowerItems()) {
-			p.act(delta);
-		}
-		for (PointItem p : world.getPointItems()) {
+		for (PItem p : world.getItems()) {
 			p.act(delta);
 		}
 		detectCollision();
@@ -102,7 +105,7 @@ public class WorldController {
 				// TODO do sth
 				b.clearActions();
 				b.setInUse(false);
-				Bullet.uselessEnemyBullet.add(b);
+				enemyBulletBuffer.add(b);
 				break;
 			}
 		}
@@ -110,32 +113,24 @@ public class WorldController {
 			for (Bullet b : world.getSelfNormalBullets()) {
 				if (b.isHit(enemy)) {
 					// TODO do sth
-					Self.recycleNormalBullet(b);
+					selfNormalBulletBuffer.add(b);
 				}
 			}
 			for (Bullet b : world.getSelfSpecialBullets()) {
 				if (b.isHit(enemy)) {
 					// TODO do sth
-					Self.recycleSpecialBullet(b);
+					selfSpecialBulletBuffer.add(b);
 				}
 			}
 		}
-		for (PowerItem p : world.getPowerItems()) {
-			if (self.itemInRange(p) && p.getTraceTarget() == null) {
-				p.setToTrace(self, PItem.TRACE_SPEED);
-			} else if (self.isHit(p)) {
-				p.hit(self);
-				parent.updatePower(self.getPower());
-				p.recycle();
-			}
-		}
-		for (PointItem p : world.getPointItems()) {
+		for (PItem p : world.getItems()) {
 			if (self.itemInRange(p) && p.getTraceTarget() == null) {
 				p.setToTrace(self, PItem.TRACE_SPEED);
 			} else if (self.isHit(p)) {
 				p.hit(self);
 				parent.updatePoint(self.getPoint());
-				p.recycle();
+				parent.updatePower(self.getPower());
+				itemBuffer.add(p);
 			}
 		}
 	}
@@ -144,17 +139,17 @@ public class WorldController {
 		for (Bullet b : world.getEnemyBullets()) {
 			if (b.isOutOfWorld()) {
 				b.clearActions();
-				Bullet.uselessEnemyBullet.add(b);
+				enemyBulletBuffer.add(b);
 			}
 		}
 		for (Bullet b : world.getSelfNormalBullets()) {
 			if (b.isOutOfWorld()) {
-				Self.recycleNormalBullet(b);
+				selfNormalBulletBuffer.add(b);
 			}
 		}
 		for (Bullet b : world.getSelfSpecialBullets()) {
 			if (b.isOutOfWorld()) {
-				Self.recycleSpecialBullet(b);
+				selfSpecialBulletBuffer.add(b);
 			}
 		}
 		for (Enemy e : world.getEnemies()) {
@@ -164,14 +159,9 @@ public class WorldController {
 				uselessEnemies.add(e);
 			}
 		}
-		for (PowerItem p : world.getPowerItems()) {
+		for (PItem p : world.getItems()) {
 			if (p.isOutOfWorld()) {
-				p.recycle();
-			}
-		}
-		for (PointItem p : world.getPointItems()) {
-			if (p.isOutOfWorld()) {
-				p.recycle();
+				itemBuffer.add(p);
 			}
 		}
 		if (self.getX() < 0) {
@@ -187,23 +177,30 @@ public class WorldController {
 	}
 
 	private void recycleUselessBullets() {
-		for (Bullet b : Bullet.uselessEnemyBullet) {
+		Bullet b;
+		while (!enemyBulletBuffer.isEmpty()) {
+			b = enemyBulletBuffer.removeFirst();
 			world.removeEnemyBullet(b);
+			Bullet.recycleEnemyBullet(b);
 		}
-		for (Bullet b : Self.uselessNormalBullet) {
+		while (!selfNormalBulletBuffer.isEmpty()) {
+			b = selfNormalBulletBuffer.removeFirst();
 			world.removeSelfNormalBullet(b);
+			Self.recycleNormalBullet(b);
 		}
-		for (Bullet b : Self.uselessSpecialBullet) {
+		while (!selfSpecialBulletBuffer.isEmpty()) {
+			b = selfSpecialBulletBuffer.removeFirst();
 			world.removeSelfSpecialBullet(b);
+			Self.recycleSpecialBullet(b);
 		}
 	}
 
 	private void recycleUselessItems() {
-		for (PowerItem p : PowerItem.uselessPowerItem) {
-			world.removePowerItem(p);
-		}
-		for (PointItem p : PointItem.uselessPointItem) {
-			world.removePointItem(p);
+		PItem p;
+		while (!itemBuffer.isEmpty()) {
+			p = itemBuffer.removeFirst();
+			world.removeItem(p);
+			p.recycle();
 		}
 	}
 

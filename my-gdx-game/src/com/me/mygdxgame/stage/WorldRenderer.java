@@ -9,8 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
-import com.me.mygdxgame.item.PointItem;
-import com.me.mygdxgame.item.PowerItem;
+import com.me.mygdxgame.item.PItem;
 import com.me.mygdxgame.item.Self;
 
 public class WorldRenderer {
@@ -50,10 +49,7 @@ public class WorldRenderer {
 		for (Enemy e : world.getEnemies()) {
 			e.draw(batch, 1);
 		}
-		for (PowerItem p : world.getPowerItems()) {
-			p.draw(batch, 1);
-		}
-		for (PointItem p : world.getPointItems()) {
+		for (PItem p : world.getItems()) {
 			p.draw(batch, 1);
 		}
 		fps.draw(batch, String.valueOf(Gdx.graphics.getFramesPerSecond()),
