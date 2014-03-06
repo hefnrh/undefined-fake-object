@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
+import com.me.mygdxgame.item.PowerItem;
 import com.me.mygdxgame.item.Self;
 
 public class World {
@@ -19,6 +20,7 @@ public class World {
 	private LinkedList<Bullet> selfSpecialBullets = new LinkedList<Bullet>();
 	private LinkedList<Bullet> enemyBullets = new LinkedList<Bullet>();
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
+	private LinkedList<PowerItem> powerItems = new LinkedList<PowerItem>();
 	private Camera camera;
 	private Texture bg;
 	private float time;
@@ -56,6 +58,10 @@ public class World {
 	public void addEnemyBullet(Bullet b) {
 		enemyBullets.add(b);
 	}
+	
+	public void addPowerItem(PowerItem p) {
+		powerItems.add(p);
+	}
 
 	public void removeSelfNormalBullet(Bullet b) {
 		selfNormalBullets.remove(b);
@@ -68,12 +74,16 @@ public class World {
 	public void removeEnemyBullet(Bullet b) {
 		enemyBullets.remove(b);
 	}
+	
+	public void removePowerItem(PowerItem p) {
+		powerItems.remove(p);
+	}
 
 	public void addEnemy(Enemy e) {
 		enemies.add(e);
 	}
 
-	public void romoveEnemy(Enemy e) {
+	public void removeEnemy(Enemy e) {
 		enemies.remove(e);
 	}
 
@@ -93,6 +103,10 @@ public class World {
 		return enemies;
 	}
 
+	public LinkedList<PowerItem> getPowerItems() {
+		return powerItems;
+	}
+	
 	public Camera getCamera() {
 		return camera;
 	}

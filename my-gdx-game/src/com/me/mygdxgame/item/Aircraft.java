@@ -37,6 +37,7 @@ public abstract class Aircraft extends Item {
 		} else {
 			currentState = selfIdle;
 		}
+		shoot(delta);
 	}
 
 	@Override
@@ -44,4 +45,6 @@ public abstract class Aircraft extends Item {
 		img = currentState.getKeyFrame(time, true);
 		super.draw(sb, alpha);
 	}
+	
+	protected abstract void shoot(float delta);
 }

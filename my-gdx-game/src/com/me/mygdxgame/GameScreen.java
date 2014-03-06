@@ -26,6 +26,8 @@ import com.me.mygdxgame.stage.WorldRenderer;
 
 public class GameScreen implements Screen {
 
+	public static final float MARGIN = 5f;
+	
 	private World world;
 	private WorldController wc;
 	private WorldRenderer wr;
@@ -34,7 +36,6 @@ public class GameScreen implements Screen {
 	public final int QUARTER_GL_WIDTH;
 	public final int GL_HEIGHT;
 	public final float WH;
-	public static final float MARGIN = 5f;
 	private AssetManager resources;
 	private BitmapFont font;
 	private Label powerLabel;
@@ -100,6 +101,7 @@ public class GameScreen implements Screen {
 		resources.load("images/bg1.jpg", Texture.class);
 		resources.load("images/item.jpg", Texture.class);
 		resources.load("images/sidebar.jpg", Texture.class);
+		resources.load("images/enemy2.jpg", Texture.class);
 		// FIXME remove after debug
 		while (!resources.update())
 			;

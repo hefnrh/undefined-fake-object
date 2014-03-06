@@ -27,6 +27,8 @@ public abstract class Self extends Aircraft {
 	public static final int LEFT = -1;
 	public static final int RIGHT = 1;
 	public static final int STOP = 0;
+	public static final LinkedList<Bullet> uselessNormalBullet = new LinkedList<Bullet>();
+	public static final LinkedList<Bullet> uselessSpecialBullet = new LinkedList<Bullet>();
 
 	private static Self self;
 
@@ -44,8 +46,6 @@ public abstract class Self extends Aircraft {
 	protected TextureRegion specialBulletImg;
 	protected Support[] supImg;
 	protected Group supGroup;
-	protected LinkedList<Bullet> uselessNormalBullet;
-	protected LinkedList<Bullet> uselessSpecialBullet;
 	
 
 	protected Self(float x, float y, float width, float height,
@@ -57,10 +57,9 @@ public abstract class Self extends Aircraft {
 		supGroup.setPosition(x + IMG_WIDTH / 2f, y + IMG_HEIGHT / 2f);
 		supGroup.setOrigin(0f, 0f);
 		lowSpeed = false;
-		uselessNormalBullet = new LinkedList<Bullet>();
-		uselessSpecialBullet = new LinkedList<Bullet>();
 		loadSupport(resources);
 		setPower(100);
+		inUse = true;
 	}
 
 	protected abstract void loadSupport(AssetManager resources);
@@ -121,11 +120,6 @@ public abstract class Self extends Aircraft {
 			supGroup.translate(dx, dy);
 		}
 		super.act(delta);
-	}
-
-	@Override
-	public void hitBy(Item i) {
-		// TODO
 	}
 
 	@Override
@@ -223,22 +217,26 @@ public abstract class Self extends Aircraft {
 		return supImg;
 	}
 	
-	public void recycleNormalBullet(Bullet b) {
+	public static void recycleNormalBullet(Bullet b) {
 		b.setInUse(false);
 		uselessNormalBullet.add(b);
 	}
 	
-	public void recycleSpecialBullet(Bullet b) {
+	public static void recycleSpecialBullet(Bullet b) {
 		b.setInUse(false);
 		b.clearActions();
 		uselessSpecialBullet.add(b);
 	}
 	
-	public LinkedList<Bullet> getUselessNormalBullet() {
-		return uselessNormalBullet;
+	@Override
+	protected void shoot(float delta) {
+		normalShoot(delta);
+		specialShoot(delta);
 	}
 	
-	public LinkedList<Bullet> getUselessSpecialBullet() {
-		return uselessSpecialBullet;
-	}
+	protected abstract void normalShoot(float delta);
+	
+	protected abstract void specialShoot(float delta);
+	
+	public abstract boolean itemInRange(PItem p);
 }

@@ -19,13 +19,18 @@ public class Reimu extends Self {
 	public static final float SPECIAL_BULLET_WIDTH = NORMAL_BULLET_WIDTH;
 	public static final float SPECIAL_BULLET_HEIGHT = NORMAL_BULLET_HEIGHT;
 	public static final float SPECIAL_BULLET_RADIUS = NORMAL_BULLET_RADIUS;
+	public static final float ITEM_RANGE = 2f;
 
-	public Reimu(float x, float y, float width, float height,
+	private float normalTime;
+	private float specialTime;
+
+	protected Reimu(float x, float y, float width, float height,
 			float checkRadius, AssetManager resources, World parent) {
 		super(x, y, width, height, checkRadius, resources, parent);
 		Texture self1 = resources.get("images/self1.jpg", Texture.class);
 		normalBulletImg = new TextureRegion(self1, 0, 144, 16, 16);
 		specialBulletImg = new TextureRegion(self1, 0, 160, 16, 16);
+		normalTime = specialTime = 0;
 	}
 
 	@Override
@@ -178,5 +183,44 @@ public class Reimu extends Self {
 	@Override
 	public float getSpecialBulletHeight() {
 		return SPECIAL_BULLET_HEIGHT;
+	}
+
+	@Override
+	protected void normalShoot(float delta) {
+		normalTime += delta;
+		float tmp = normalTime * 15f;
+		if (tmp < 1)
+			return;
+		normalTime -= 1f / 15f;
+		Bullet myBullet;
+		// self bullet will be rotated before shooting, so set X + height
+		myBullet = newNormalBullet(getX() + getNormalBulletHeight(), getY()
+				+ Self.IMG_HEIGHT);
+		world.addSelfNormalBullet(myBullet);
+		myBullet = newNormalBullet(getX() + Self.IMG_WIDTH, getY()
+				+ Self.IMG_HEIGHT);
+		world.addSelfNormalBullet(myBullet);
+	}
+
+	@Override
+	protected void specialShoot(float delta) {
+		specialTime += delta;
+		float tmp = specialTime * 4f;
+		if (tmp < 1)
+			return;
+		specialTime -= 0.25f;
+		Bullet myBullet;
+		for (int i = 0; i < powerLevel; ++i) {
+			myBullet = newSpecialBullet(getSupportCenterX(i)
+					- getSpecialBulletHeight() / 2f, getSupportCenterY(i));
+			world.addSelfSpecialBullet(myBullet);
+		}
+	}
+
+	@Override
+	public boolean itemInRange(PItem p) {
+		float dx = getCheckX() - p.getCheckX();
+		float dy = getCheckY() - p.getCheckY();
+		return dx * dx + dy * dy < ITEM_RANGE * ITEM_RANGE;
 	}
 }

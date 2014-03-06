@@ -1,29 +1,36 @@
 package com.me.mygdxgame.item;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.assets.AssetManager;
 import com.me.mygdxgame.stage.World;
 
 
-public class Enemy extends Aircraft {
+public abstract class Enemy extends Aircraft {
 	
-	public int hp;
+	protected int hp;
+	protected ArrayList<PItem> pointItems;
+	protected ArrayList<PowerItem> powerItems;
 	
 	protected Enemy(float x, float y, float width, float height,
-			float checkRadius, AssetManager resources, World world) {
+			float checkRadius, AssetManager resources, World world, int hp) {
 		super(x, y, width, height, checkRadius, resources, world);
-		// TODO Auto-generated constructor stub
+		this.hp = hp;
+		pointItems = new ArrayList<PItem>();
+		powerItems = new ArrayList<PowerItem>();
+	}
+	
+	public void addPoint(PItem point) {
+		pointItems.add(point);
+	}
+	
+	public void addPower(PowerItem power) {
+		powerItems.add(power);
 	}
 
-	@Override
-	public void hitBy(Item i) {
-		// TODO Auto-generated method stub
-
+	public abstract void dead();
+	
+	public int getHp() {
+		return hp;
 	}
-
-	@Override
-	protected void loadAtlas(AssetManager resources) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

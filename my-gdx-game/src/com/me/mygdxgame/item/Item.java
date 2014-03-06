@@ -14,7 +14,7 @@ public abstract class Item extends Actor {
 	protected TextureRegion img;
 	protected float checkRadius;
 	protected float imgRadius;
-	protected Item toTrace = null;
+	protected Item toTrace;
 	protected float traceSpeed;
 	protected boolean inUse;
 	protected Action action;
@@ -24,6 +24,7 @@ public abstract class Item extends Actor {
 			float checkRadius, TextureRegion img, World world) {
 		init(x, y, width, height, checkRadius, img);
 		this.world = world;
+		toTrace = null;
 	}
 
 	public float getCheckX() {
@@ -59,8 +60,6 @@ public abstract class Item extends Actor {
 		return dx * dx + dy * dy < distance * distance;
 	}
 
-	public abstract void hitBy(Item i);
-
 	public void setImg(TextureRegion img) {
 		this.img = img;
 	}
@@ -94,6 +93,10 @@ public abstract class Item extends Actor {
 		traceSpeed = speed;
 	}
 
+	public Item getTraceTarget() {
+		return toTrace;
+	}
+	
 	@Override
 	public void act(float delta) {
 		if (toTrace != null && toTrace.inUse) {

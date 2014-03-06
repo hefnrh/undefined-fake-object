@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.me.mygdxgame.item.Bullet;
+import com.me.mygdxgame.item.Enemy;
+import com.me.mygdxgame.item.PowerItem;
 import com.me.mygdxgame.item.Self;
 
 public class WorldRenderer {
@@ -44,7 +46,12 @@ public class WorldRenderer {
 		for (Bullet b : world.getEnemyBullets()) {
 			b.draw(batch, 1);
 		}
-		// TODO draw enemies
+		for (Enemy e : world.getEnemies()) {
+			e.draw(batch, 1);
+		}
+		for (PowerItem p : world.getPowerItems()) {
+			p.draw(batch, 1);
+		}
 		fps.draw(batch, String.valueOf(Gdx.graphics.getFramesPerSecond()),
 				World.CAMERA_WIDTH - 3, fps.getCapHeight());
 		batch.end();
