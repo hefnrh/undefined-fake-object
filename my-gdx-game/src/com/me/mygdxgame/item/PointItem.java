@@ -18,7 +18,7 @@ public class PointItem extends PItem {
 		super(x, y, WIDTH, HEIGHT, RADIUS, null, world);
 	}
 
-	public static PointItem newPointItem(float x, float y,
+	public synchronized static PointItem newPointItem(float x, float y,
 			AssetManager resources, World world) {
 		PointItem p;
 		if (uselessPointItem.isEmpty()) {
@@ -26,7 +26,7 @@ public class PointItem extends PItem {
 			p.img = new TextureRegion(resources.get("images/item.jpg",
 					Texture.class), 16, 208, 16, 16);
 		} else {
-			p = uselessPointItem.removeFirst();
+			p = uselessPointItem.poll();
 			p.setPosition(x, y);
 		}
 		return p;
@@ -39,8 +39,13 @@ public class PointItem extends PItem {
 
 	@Override
 	public void recycle() {
-		setToTrace(null, 0);
-		uselessPointItem.add(this);
+		synchronized (PointItem.class) {
+			setToTrace(null, 0);
+			if (action != null) {
+				removeAction(action);
+			}
+			uselessPointItem.add(this);
+		}
 	}
 
 }

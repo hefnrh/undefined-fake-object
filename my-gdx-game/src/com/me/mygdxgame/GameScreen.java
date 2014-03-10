@@ -20,6 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.me.mygdxgame.item.Self;
+import com.me.mygdxgame.stage.AbstractStage;
+import com.me.mygdxgame.stage.Stage1;
 import com.me.mygdxgame.stage.World;
 import com.me.mygdxgame.stage.WorldController;
 import com.me.mygdxgame.stage.WorldRenderer;
@@ -32,6 +34,7 @@ public class GameScreen implements Screen {
 	private WorldController wc;
 	private WorldRenderer wr;
 	private Stage inputStage;
+	private AbstractStage stage;
 	public final int GL_WIDTH;
 	public final int QUARTER_GL_WIDTH;
 	public final int GL_HEIGHT;
@@ -59,6 +62,17 @@ public class GameScreen implements Screen {
 		QUARTER_GL_WIDTH = GL_WIDTH >> 2;
 		GL_HEIGHT = Gdx.graphics.getHeight();
 		WH = (QUARTER_GL_WIDTH - 10f) / 3f;
+		loadRescources();
+		world = new World();
+		wc = new WorldController(world, resources, this);
+		wr = new WorldRenderer(world);
+		inputStage = new Stage();
+		stage = new Stage1(world, resources);
+		loadImage();
+		loadButtons();
+		Gdx.input.setInputProcessor(inputStage);
+		bgm = resources.get("sound/bgm.mp3", Music.class);
+		bgm.setLooping(true);
 	}
 
 	@Override
@@ -79,16 +93,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void show() {
-		loadRescources();
-		world = new World();
-		wc = new WorldController(world, resources, this);
-		wr = new WorldRenderer(world);
-		inputStage = new Stage();
-		loadImage();
-		loadButtons();
-		Gdx.input.setInputProcessor(inputStage);
-		bgm = resources.get("sound/bgm.mp3", Music.class);
-		bgm.setLooping(true);
+		new Thread(stage).start();
 		bgm.play();
 	}
 
@@ -97,6 +102,7 @@ public class GameScreen implements Screen {
 		resources.load("sound/bgm.mp3", Music.class);
 		resources.load("images/textures/button.pack", TextureAtlas.class);
 		resources.load("images/bullet2.jpg", Texture.class);
+		resources.load("images/bullet1.jpg", Texture.class);
 		resources.load("images/self1.jpg", Texture.class);
 		resources.load("images/bg1.jpg", Texture.class);
 		resources.load("images/item.jpg", Texture.class);

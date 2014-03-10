@@ -99,8 +99,12 @@ public abstract class Item extends Actor {
 	
 	@Override
 	public void act(float delta) {
-		if (toTrace != null && toTrace.inUse) {
-			trace(delta);
+		if (toTrace != null) {
+			if (toTrace.inUse) {
+				trace(delta);
+			} else {
+				setToTrace(null, 0);
+			}
 		}
 		super.act(delta);
 	}

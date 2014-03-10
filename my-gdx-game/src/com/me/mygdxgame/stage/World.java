@@ -47,43 +47,43 @@ public class World {
 		this.bg = bg;
 	}
 
-	public void addSelfNormalBullet(Bullet b) {
+	public synchronized void addSelfNormalBullet(Bullet b) {
 		selfNormalBullets.add(b);
 	}
 
-	public void addSelfSpecialBullet(Bullet b) {
+	public synchronized void addSelfSpecialBullet(Bullet b) {
 		selfSpecialBullets.add(b);
 	}
 	
-	public void addEnemyBullet(Bullet b) {
+	public synchronized void addEnemyBullet(Bullet b) {
 		enemyBullets.add(b);
 	}
 	
-	public void addItem(PItem p) {
+	public synchronized void addItem(PItem p) {
 		items.add(p);
 	}
 	
-	public void addEnemy(Enemy e) {
+	public synchronized void addEnemy(Enemy e) {
 		enemies.add(e);
 	}
 	
-	public void removeSelfNormalBullet(Bullet b) {
+	public synchronized void removeSelfNormalBullet(Bullet b) {
 		selfNormalBullets.remove(b);
 	}
 	
-	public void removeSelfSpecialBullet(Bullet b) {
+	public synchronized void removeSelfSpecialBullet(Bullet b) {
 		selfSpecialBullets.remove(b);
 	}
 
-	public void removeEnemyBullet(Bullet b) {
+	public synchronized void removeEnemyBullet(Bullet b) {
 		enemyBullets.remove(b);
 	}
 	
-	public void removeItem(PItem p) {
+	public synchronized void removeItem(PItem p) {
 		items.remove(p);
 	}
 	
-	public void removeEnemy(Enemy e) {
+	public synchronized void removeEnemy(Enemy e) {
 		enemies.remove(e);
 	}
 

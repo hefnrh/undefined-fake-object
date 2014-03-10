@@ -36,26 +36,28 @@ public class WorldRenderer {
 	public void draw() {
 		batch.begin();
 		drawBg();
-		for (Bullet b : world.getSelfNormalBullets()) {
-			b.draw(batch, 1);
-		}
-		for (Bullet b : world.getSelfSpecialBullets()) {
-			b.draw(batch, 1);
-		}
-		world.getSelf().draw(batch, 1);
-		for (Bullet b : world.getEnemyBullets()) {
-			b.draw(batch, 1);
-		}
-		for (Enemy e : world.getEnemies()) {
-			e.draw(batch, 1);
-		}
-		for (PItem p : world.getItems()) {
-			p.draw(batch, 1);
+		synchronized (world) {
+			for (Bullet b : world.getSelfNormalBullets()) {
+				b.draw(batch, 1);
+			}
+			for (Bullet b : world.getSelfSpecialBullets()) {
+				b.draw(batch, 1);
+			}
+			world.getSelf().draw(batch, 1);
+			for (Bullet b : world.getEnemyBullets()) {
+				b.draw(batch, 1);
+			}
+			for (Enemy e : world.getEnemies()) {
+				e.draw(batch, 1);
+			}
+			for (PItem p : world.getItems()) {
+				p.draw(batch, 1);
+			}
 		}
 		fps.draw(batch, String.valueOf(Gdx.graphics.getFramesPerSecond()),
 				World.CAMERA_WIDTH - 3, fps.getCapHeight());
 		batch.end();
-//		drawDebug();
+		// drawDebug();
 	}
 
 	private void drawBg() {

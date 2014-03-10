@@ -222,11 +222,11 @@ public abstract class Self extends Aircraft {
 		return supImg;
 	}
 	
-	public static void recycleNormalBullet(Bullet b) {
+	public synchronized static void recycleNormalBullet(Bullet b) {
 		uselessNormalBullet.add(b);
 	}
 	
-	public static void recycleSpecialBullet(Bullet b) {
+	public synchronized static void recycleSpecialBullet(Bullet b) {
 		b.clearActions();
 		uselessSpecialBullet.add(b);
 	}

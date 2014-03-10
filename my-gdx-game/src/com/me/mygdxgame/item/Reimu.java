@@ -93,18 +93,20 @@ public class Reimu extends Self {
 	}
 
 	@Override
-	public Bullet newNormalBullet(float x, float y) {
+	public synchronized Bullet newNormalBullet(float x, float y) {
 		Bullet b;
-		if (uselessNormalBullet.isEmpty()) {
-			b = new Bullet(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
-					NORMAL_BULLET_RADIUS, normalBulletImg, world);
-			b.setRotation(90);
-			b.addAction(Actions.repeat(RepeatAction.FOREVER,
-					Actions.moveBy(0, 6, 0.1f)));
-		} else {
-			b = uselessNormalBullet.removeFirst();
-			b.init(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
-					NORMAL_BULLET_RADIUS, normalBulletImg);
+		synchronized (Self.class) {
+			if (uselessNormalBullet.isEmpty()) {
+				b = new Bullet(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
+						NORMAL_BULLET_RADIUS, normalBulletImg, world);
+				b.setRotation(90);
+				b.addAction(Actions.repeat(RepeatAction.FOREVER,
+						Actions.moveBy(0, 6, 0.1f)));
+			} else {
+				b = uselessNormalBullet.poll();
+				b.init(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
+						NORMAL_BULLET_RADIUS, normalBulletImg);
+			}
 		}
 		return b;
 	}
@@ -112,23 +114,26 @@ public class Reimu extends Self {
 	@Override
 	public Bullet newSpecialBullet(float x, float y) {
 		Bullet b;
-		if (uselessSpecialBullet.isEmpty()) {
-			b = new Bullet(x, y, SPECIAL_BULLET_WIDTH, SPECIAL_BULLET_HEIGHT,
-					SPECIAL_BULLET_RADIUS, specialBulletImg, world);
-			b.setOrigin(ReimuSupport.WIDTH / 2f, ReimuSupport.HEIGHT / 2f);
-		} else {
-			b = uselessSpecialBullet.removeFirst();
-			b.init(x, y, SPECIAL_BULLET_WIDTH, SPECIAL_BULLET_HEIGHT,
-					SPECIAL_BULLET_RADIUS, specialBulletImg);
-		}
-		b.addAction(Actions.repeat(RepeatAction.FOREVER,
-				Actions.rotateBy(30, 0.1f)));
-		LinkedList<Enemy> enemies = world.getEnemies();
-		if (enemies.isEmpty()) {
-			b.setAction(Actions.repeat(RepeatAction.FOREVER,
-					Actions.moveBy(0, 4, 0.1f)));
-		} else {
-			b.setToTrace(enemies.peekFirst(), 40f);
+		synchronized (Self.class) {
+			if (uselessSpecialBullet.isEmpty()) {
+				b = new Bullet(x, y, SPECIAL_BULLET_WIDTH,
+						SPECIAL_BULLET_HEIGHT, SPECIAL_BULLET_RADIUS,
+						specialBulletImg, world);
+				b.setOrigin(ReimuSupport.WIDTH / 2f, ReimuSupport.HEIGHT / 2f);
+			} else {
+				b = uselessSpecialBullet.poll();
+				b.init(x, y, SPECIAL_BULLET_WIDTH, SPECIAL_BULLET_HEIGHT,
+						SPECIAL_BULLET_RADIUS, specialBulletImg);
+			}
+			b.addAction(Actions.repeat(RepeatAction.FOREVER,
+					Actions.rotateBy(30, 0.1f)));
+			LinkedList<Enemy> enemies = world.getEnemies();
+			if (enemies.isEmpty()) {
+				b.setAction(Actions.repeat(RepeatAction.FOREVER,
+						Actions.moveBy(0, 4, 0.1f)));
+			} else {
+				b.setToTrace(enemies.peekFirst(), 40f);
+			}
 		}
 		return b;
 	}
@@ -205,10 +210,10 @@ public class Reimu extends Self {
 	@Override
 	protected void specialShoot(float delta) {
 		specialTime += delta;
-		float tmp = specialTime * 4f;
+		float tmp = specialTime * 5f;
 		if (tmp < 1)
 			return;
-		specialTime -= 0.25f;
+		specialTime -= 0.2f;
 		Bullet myBullet;
 		for (int i = 0; i < powerLevel; ++i) {
 			myBullet = newSpecialBullet(getSupportCenterX(i)

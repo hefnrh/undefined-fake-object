@@ -18,7 +18,7 @@ public class PowerItem extends PItem {
 		super(x, y, WIDTH, HEIGHT, RADIUS, null, world);
 	}
 
-	public static PowerItem newPowerItem(float x, float y,
+	public synchronized static PowerItem newPowerItem(float x, float y,
 			AssetManager resources, World world) {
 		PowerItem p;
 		if (uselessPowerItem.isEmpty()) {
@@ -26,7 +26,7 @@ public class PowerItem extends PItem {
 			p.img = new TextureRegion(resources.get("images/item.jpg",
 					Texture.class), 0, 208, 16, 16);
 		} else {
-			p = uselessPowerItem.removeFirst();
+			p = uselessPowerItem.poll();
 			p.setPosition(x, y);
 		}
 		return p;
@@ -39,8 +39,13 @@ public class PowerItem extends PItem {
 
 	@Override
 	public void recycle() {
-		this.setToTrace(null, 0);
-		uselessPowerItem.add(this);
+		synchronized (PowerItem.class) {
+			this.setToTrace(null, 0);
+			if (action != null) {
+				removeAction(action);
+			}
+			uselessPowerItem.add(this);
+		}
 	}
 
 }

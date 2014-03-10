@@ -59,6 +59,7 @@ public class PowerElf extends Enemy {
 		float vy = s.getCheckY() - getCheckY();
 		float v = (float) Math.sqrt(vx * vx + vy * vy);
 		float f = speed * delta / v;
+		b.setPosition(getCheckX() - b.getWidth(), getCheckY() - b.getHeight());
 		b.addAction(Actions.repeat(RepeatAction.FOREVER,
 				Actions.moveBy(f * vx, f * vy)));
 		world.addEnemyBullet(b);
@@ -68,13 +69,13 @@ public class PowerElf extends Enemy {
 	public void randomShoot(float delta, Bullet b, float speed) {
 	}
 
-	public static PowerElf newPowerElf(float x, float y,
+	public synchronized static PowerElf newPowerElf(float x, float y,
 			AssetManager resources, World world, int hp) {
 		PowerElf powerElf;
 		if (uselessPowerElf.isEmpty()) {
 			powerElf = new PowerElf(x, y, resources, world, hp);
 		} else {
-			powerElf = uselessPowerElf.removeFirst();
+			powerElf = uselessPowerElf.poll();
 			powerElf.setPosition(x, y);
 			powerElf.hp = hp;
 			powerElf.inUse = true;
@@ -85,8 +86,9 @@ public class PowerElf extends Enemy {
 
 	@Override
 	public void recycle() {
-		clearActions();
-		setInUse(false);
-		uselessPowerElf.add(this);
+		synchronized (PowerElf.class) {
+			setInUse(false);
+			uselessPowerElf.add(this);
+		}
 	}
 }

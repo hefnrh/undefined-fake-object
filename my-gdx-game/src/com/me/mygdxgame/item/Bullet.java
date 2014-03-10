@@ -14,18 +14,18 @@ public class Bullet extends Item {
 		super(x, y, width, height, checkRadius, img, world);
 	}
 	
-	public static Bullet newEnemyBullet(float x, float y, float width, float height,
+	public synchronized static Bullet newEnemyBullet(float x, float y, float width, float height,
 			float checkRadius, TextureRegion img, World world) {
 		if (uselessEnemyBullet.isEmpty()) {
 			return new Bullet(x, y, width, height, checkRadius, img, world);
 		} else {
-			Bullet b = uselessEnemyBullet.removeFirst();
+			Bullet b = uselessEnemyBullet.poll();
 			b.init(x, y, width, height, checkRadius, img);
 			return b;
 		}
 	}
 	
-	public static void recycleEnemyBullet(Bullet b) {
+	public synchronized static void recycleEnemyBullet(Bullet b) {
 		b.clearActions();
 		uselessEnemyBullet.add(b);
 	}

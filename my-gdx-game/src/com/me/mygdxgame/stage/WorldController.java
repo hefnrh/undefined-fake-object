@@ -45,7 +45,7 @@ public class WorldController {
 		itemBuffer = new LinkedList<PItem>();
 		world.setBg(resources.get("images/bg1.jpg", Texture.class));
 		// addDebugBullets();
-		addDebugEnemies();
+		// addDebugEnemies();
 		// addDebugItem();
 		time = 0;
 	}
@@ -76,18 +76,24 @@ public class WorldController {
 	private void addDebugEnemies() {
 		Enemy e;
 		for (int i = 0; i < 5; ++i) {
-			e = PowerElf.newPowerElf(MathUtils.random(0, 40), 48, resources, world, 10);
-			e.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(0, -4.8f, 1f)));
+			e = PowerElf.newPowerElf(MathUtils.random(0, 40), 48, resources,
+					world, 10);
+			e.addAction(Actions.repeat(RepeatAction.FOREVER,
+					Actions.moveBy(0, -4.8f, 1f)));
 			world.addEnemy(e);
 		}
 		for (int i = 0; i < 5; ++i) {
-			e = PowerElf.newPowerElf(-PowerElf.WIDTH, MathUtils.random(36, 48), resources, world, 10);
-			e.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(4.8f, 0f, 1f)));
+			e = PowerElf.newPowerElf(-PowerElf.WIDTH, MathUtils.random(36, 48),
+					resources, world, 10);
+			e.addAction(Actions.repeat(RepeatAction.FOREVER,
+					Actions.moveBy(4.8f, 0f, 1f)));
 			world.addEnemy(e);
 		}
 		for (int i = 0; i < 5; ++i) {
-			e = PowerElf.newPowerElf(40f, MathUtils.random(36, 48), resources, world, 10);
-			e.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(-4.8f, 0f, 1f)));
+			e = PowerElf.newPowerElf(40f, MathUtils.random(36, 48), resources,
+					world, 10);
+			e.addAction(Actions.repeat(RepeatAction.FOREVER,
+					Actions.moveBy(-4.8f, 0f, 1f)));
 			world.addEnemy(e);
 		}
 	}
@@ -95,26 +101,28 @@ public class WorldController {
 	public void update(float delta) {
 		world.updateTime(delta);
 		self.act(delta);
-		for (Bullet b : world.getEnemyBullets()) {
-			b.act(delta);
+		synchronized (world) {
+			for (Bullet b : world.getEnemyBullets()) {
+				b.act(delta);
+			}
+			for (Bullet b : world.getSelfNormalBullets()) {
+				b.act(delta);
+			}
+			for (Bullet b : world.getSelfSpecialBullets()) {
+				b.act(delta);
+			}
+			for (Enemy e : world.getEnemies()) {
+				e.act(delta);
+			}
+			for (PItem p : world.getItems()) {
+				p.act(delta);
+			}
+			detectCollision();
+			detectOutOfWorld();
+			recycleUselessBullets();
+			recycleUselessEnemies();
+			recycleUselessItems();
 		}
-		for (Bullet b : world.getSelfNormalBullets()) {
-			b.act(delta);
-		}
-		for (Bullet b : world.getSelfSpecialBullets()) {
-			b.act(delta);
-		}
-		for (Enemy e : world.getEnemies()) {
-			e.act(delta);
-		}
-		for (PItem p : world.getItems()) {
-			p.act(delta);
-		}
-		detectCollision();
-		detectOutOfWorld();
-		recycleUselessBullets();
-		recycleUselessEnemies();
-		recycleUselessItems();
 	}
 
 	private void detectCollision() {
@@ -130,7 +138,7 @@ public class WorldController {
 			for (Bullet b : world.getSelfNormalBullets()) {
 				if (b.isHit(enemy)) {
 					enemy.removeHp(1);
-					if (enemy.getHp() <= 0) {
+					if (enemy.getHp() == 0) {
 						enemy.dead();
 						enemyBuffer.add(enemy);
 					}
@@ -140,7 +148,7 @@ public class WorldController {
 			for (Bullet b : world.getSelfSpecialBullets()) {
 				if (b.isHit(enemy)) {
 					enemy.removeHp(1);
-					if (enemy.getHp() <= 0) {
+					if (enemy.getHp() == 0) {
 						enemy.dead();
 						enemyBuffer.add(enemy);
 					}
@@ -165,28 +173,28 @@ public class WorldController {
 
 	private void detectOutOfWorld() {
 		for (Bullet b : world.getEnemyBullets()) {
-			if (b.isOutOfWorld()) {
+			if (b.isOutOfWorld() && !enemyBulletBuffer.contains(b)) {
 				b.clearActions();
 				enemyBulletBuffer.add(b);
 			}
 		}
 		for (Bullet b : world.getSelfNormalBullets()) {
-			if (b.isOutOfWorld()) {
+			if (b.isOutOfWorld() && !selfNormalBulletBuffer.contains(b)) {
 				selfNormalBulletBuffer.add(b);
 			}
 		}
 		for (Bullet b : world.getSelfSpecialBullets()) {
-			if (b.isOutOfWorld()) {
+			if (b.isOutOfWorld() && !selfSpecialBulletBuffer.contains(b)) {
 				selfSpecialBulletBuffer.add(b);
 			}
 		}
 		for (Enemy e : world.getEnemies()) {
-			if (e.isOutOfWorld()) {
+			if (e.isOutOfWorld() && !enemyBuffer.contains(e)) {
 				enemyBuffer.add(e);
 			}
 		}
 		for (PItem p : world.getItems()) {
-			if (p.isOutOfWorld()) {
+			if (p.isOutOfWorld() && !itemBuffer.contains(p)) {
 				itemBuffer.add(p);
 			}
 		}
