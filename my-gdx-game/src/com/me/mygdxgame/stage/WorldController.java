@@ -132,7 +132,8 @@ public class WorldController {
 				parent.updateLife(1);
 				return;
 			}
-			if (self.isGraze(b)) {
+			if (self.isGraze(b) && !b.isGrazed()) {
+				b.setGrazed(true);
 				parent.updateGraze(1);
 			}
 		}

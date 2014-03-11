@@ -16,9 +16,12 @@ public class Bullet extends Item {
 		}
 	}
 	
+	private boolean grazed;
+	
 	public Bullet(float x, float y, float width, float height,
 			float checkRadius, TextureRegion img, World world) {
 		super(x, y, width, height, checkRadius, img, world);
+		grazed = false;
 	}
 	
 	public synchronized static Bullet newEnemyBullet(float x, float y, float width, float height,
@@ -29,8 +32,17 @@ public class Bullet extends Item {
 			Bullet b = uselessEnemyBullet.poll();
 			b.world = world;
 			b.init(x, y, width, height, checkRadius, img);
+			b.grazed = false;
 			return b;
 		}
+	}
+	
+	public void setGrazed(boolean b) {
+		grazed = b;
+	}
+	
+	public boolean isGrazed() {
+		return grazed;
 	}
 	
 	public synchronized static void recycleEnemyBullet(Bullet b) {

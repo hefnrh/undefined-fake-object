@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.item.Bullet;
+import com.me.mygdxgame.item.Butterfly;
 import com.me.mygdxgame.item.Enemy;
-import com.me.mygdxgame.item.PowerElf;
 import com.me.mygdxgame.stage.pattern.AllRangeShoot;
 
 public class Stage1 extends AbstractStage {
@@ -22,13 +22,13 @@ public class Stage1 extends AbstractStage {
 				"images/bullet1.jpg", Texture.class), 112, 48, 16, 16);
 		while (true) {
 			checkTime(500);
-			Enemy e = PowerElf.newPowerElf(0, World.CAMERA_HEIGHT, resources,
-					world, 20);
+			Enemy e = Butterfly.newButterfly(0, World.CAMERA_HEIGHT, resources,
+					world, 10);
 			e.addAction(Actions.repeat(RepeatAction.FOREVER,
 					Actions.moveBy(40, -20, 3)));
 			Bullet b = Bullet.newEnemyBullet(0, 0, 0.5f, 0.5f, 0.2f, bimg,
 					world);
-			e.setShootPattern(new AllRangeShoot(10, 0.5f, 10, e, b, 1, 36));
+			e.setShootPattern(new AllRangeShoot(5, 0.5f, 5, e, b, 0.3f, 18));
 			world.addEnemy(e);
 		}
 	}
