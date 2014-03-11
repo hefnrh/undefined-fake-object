@@ -33,9 +33,7 @@ public class AimShoot extends ShootPattern {
 		float deg;
 		for (int i = 0; i < n; ++i) {
 			deg = startDeg + i * degreePerBullet;
-			b = Bullet.newEnemyBullet(0, 0, example.getWidth(),
-					example.getHeight(), example.getCheckRadius(),
-					example.getImg(), example.getWorld());
+			b = getBullet();
 			b.setOrigin(b.getWidth() / 2, b.getHeight() / 2);
 			b.rotate(deg);
 			b.addAction(Actions.repeat(

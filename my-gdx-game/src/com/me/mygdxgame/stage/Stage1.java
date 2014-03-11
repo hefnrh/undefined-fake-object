@@ -19,16 +19,17 @@ public class Stage1 extends AbstractStage {
 	@Override
 	public synchronized void run() {
 		TextureRegion bimg = new TextureRegion(resources.get(
-				"images/bullet1.jpg", Texture.class), 112, 48, 16, 16);
+				"images/bullet1.jpg", Texture.class), 112, 80, 16, 16);
 		while (true) {
 			checkTime(500);
 			Enemy e = Butterfly.newButterfly(0, World.CAMERA_HEIGHT, resources,
 					world, 10);
 			e.addAction(Actions.repeat(RepeatAction.FOREVER,
 					Actions.moveBy(40, -20, 3)));
-			Bullet b = Bullet.newEnemyBullet(0, 0, 0.5f, 0.5f, 0.2f, bimg,
+			Bullet b = Bullet.newEnemyBullet(0, 0, 0.5f, 0.5f, 0.125f, bimg,
 					world);
-			e.setShootPattern(new AllRangeShoot(5, 0.5f, 5, e, b, 0.3f, 18));
+			b.setRotation(-90);
+			e.setShootPattern(new AllRangeShoot(5, 0.5f, 5, e, b, 0.2f, 18));
 			world.addEnemy(e);
 		}
 	}

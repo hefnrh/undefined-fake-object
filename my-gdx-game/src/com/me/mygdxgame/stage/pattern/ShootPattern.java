@@ -12,8 +12,9 @@ public abstract class ShootPattern {
 	protected Enemy parent;
 	protected Bullet example;
 	protected float speed;
-	
-	protected ShootPattern(int magazine, float delay, float rps, Enemy parent, Bullet b, float speed) {
+
+	protected ShootPattern(int magazine, float delay, float rps, Enemy parent,
+			Bullet b, float speed) {
 		time = -delay;
 		count = 0;
 		this.magazine = magazine;
@@ -24,13 +25,24 @@ public abstract class ShootPattern {
 	}
 
 	public abstract void shoot();
-	
+
 	public void shootWithCheck(float delta) {
 		time += delta;
-		if (time * rps < 1) return;
+		if (time * rps < 1)
+			return;
 		time -= 1f / rps;
 		++count;
-		if (count > magazine) return;
+		if (count > magazine)
+			return;
 		shoot();
+	}
+
+	protected Bullet getBullet() {
+		Bullet b = Bullet.newEnemyBullet(example.getX(), example.getY(),
+				example.getWidth(), example.getHeight(),
+				example.getCheckRadius(), example.getImg(), example.getWorld());
+		b.setOrigin(example.getOriginX(), example.getOriginY());
+		b.setRotation(example.getRotation());
+		return b;
 	}
 }
