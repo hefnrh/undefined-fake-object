@@ -128,10 +128,9 @@ public class WorldController {
 	private void detectCollision() {
 		for (Bullet b : world.getEnemyBullets()) {
 			if (b.isHit(self)) {
-				// TODO do sth
-				b.clearActions();
-				enemyBulletBuffer.add(b);
-				break;
+				recycleAllEnemyBullet();
+				parent.updateLife(1);
+				return;
 			}
 			if (self.isGraze(b)) {
 				parent.updateGraze(1);
@@ -159,8 +158,9 @@ public class WorldController {
 				}
 			}
 			if (self.isHit(enemy)) {
-				// TODO
-				break;
+				recycleAllEnemyBullet();
+				parent.updateLife(1);
+				return;
 			}
 		}
 		for (PItem p : world.getItems()) {
@@ -175,6 +175,13 @@ public class WorldController {
 		}
 	}
 
+	private void recycleAllEnemyBullet() {
+		for (Bullet b : world.getEnemyBullets()) {
+			b.clearActions();
+			enemyBulletBuffer.add(b);
+		}
+	}
+	
 	private void detectOutOfWorld() {
 		for (Bullet b : world.getEnemyBullets()) {
 			if (b.isOutOfWorld() && !enemyBulletBuffer.contains(b)) {

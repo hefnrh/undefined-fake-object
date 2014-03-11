@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
@@ -60,6 +61,7 @@ public class GameScreen implements Screen {
 	private ClickListener listener;
 
 	private Music bgm;
+	private Sound miss;
 
 	public GameScreen(Game parent) {
 		GL_WIDTH = Gdx.graphics.getWidth();
@@ -77,6 +79,7 @@ public class GameScreen implements Screen {
 		Gdx.input.setInputProcessor(inputStage);
 		bgm = resources.get("sound/bgm.mp3", Music.class);
 		bgm.setLooping(true);
+		miss = resources.get("sound/miss.wav", Sound.class);
 	}
 
 	@Override
@@ -104,6 +107,7 @@ public class GameScreen implements Screen {
 	private void loadRescources() {
 		resources = new AssetManager();
 		resources.load("sound/bgm.mp3", Music.class);
+		resources.load("sound/miss.wav", Sound.class);
 		resources.load("images/textures/button.pack", TextureAtlas.class);
 		resources.load("images/bullet2.jpg", Texture.class);
 		resources.load("images/bullet1.jpg", Texture.class);
@@ -158,8 +162,8 @@ public class GameScreen implements Screen {
 		life.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN,
 				GL_HEIGHT - power.getHeight() - MARGIN);
 		inputStage.addActor(life);
-		lifeCount = 2;
-		lifeLabel = new Label("2", style);
+		lifeCount = 0;
+		lifeLabel = new Label("0", style);
 		lifeLabel.setPosition(power.getWidth() + life.getX(), life.getY());
 		inputStage.addActor(lifeLabel);
 		Image graze = new Image(new TextureRegionDrawable(new TextureRegion(
@@ -320,6 +324,7 @@ public class GameScreen implements Screen {
 	}
 
 	public void updateLife(int delta) {
+		miss.play();
 		lifeCount += delta;
 		lifeLabel.setText(String.valueOf(lifeCount));
 	}
