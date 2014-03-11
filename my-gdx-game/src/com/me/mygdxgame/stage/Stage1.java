@@ -3,12 +3,12 @@ package com.me.mygdxgame.stage;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Enemy;
 import com.me.mygdxgame.item.PowerElf;
+import com.me.mygdxgame.stage.pattern.AllRangeShoot;
 
 public class Stage1 extends AbstractStage {
 
@@ -32,31 +32,7 @@ public class Stage1 extends AbstractStage {
 					Actions.moveBy(40, -20, 3)));
 			Bullet b = Bullet.newEnemyBullet(0, 0, 0.5f, 0.5f, 0.2f, bimg,
 					world);
-			e.setShootPattern(new ShootPattern(10, 0.5f, 5, e, b) {
-
-				@Override
-				public void shoot() {
-					Bullet toShoot;
-					float deg;
-					for (int i = 0; i < 5; ++i) {
-						toShoot = Bullet.newEnemyBullet(0, 0,
-								example.getWidth(), example.getHeight(),
-								example.getCheckRadius(), example.getImg(),
-								world);
-						toShoot.setOrigin(toShoot.getWidth() / 2,
-								toShoot.getHeight() / 2);
-						deg = (i - 2) * 36;
-						toShoot.setRotation(deg);
-						toShoot.setPosition(
-								parent.getCheckX() - toShoot.getWidth() / 2,
-								parent.getCheckY() - toShoot.getHeight() / 2);
-						toShoot.addAction(Actions.moveBy(
-								MathUtils.sinDeg(deg) * 58,
-								MathUtils.cosDeg(deg) * (-58), 30));
-						world.addEnemyBullet(toShoot);
-					}
-				}
-			});
+			e.setShootPattern(new AllRangeShoot(10, 0.5f, 10, e, b, 1, 36));
 			world.addEnemy(e);
 //		}
 	}

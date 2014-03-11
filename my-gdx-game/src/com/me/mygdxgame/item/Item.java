@@ -137,4 +137,8 @@ public abstract class Item extends Actor {
 		action = a;
 		addAction(action);
 	}
+	
+	public World getWorld() {
+		return world;
+	}
 }

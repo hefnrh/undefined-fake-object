@@ -3,8 +3,8 @@ package com.me.mygdxgame.item;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.me.mygdxgame.stage.ShootPattern;
 import com.me.mygdxgame.stage.World;
+import com.me.mygdxgame.stage.pattern.ShootPattern;
 
 
 public abstract class Enemy extends Aircraft {
