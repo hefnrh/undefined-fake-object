@@ -133,6 +133,9 @@ public class WorldController {
 				enemyBulletBuffer.add(b);
 				break;
 			}
+			if (self.isGraze(b)) {
+				parent.updateGraze(1);
+			}
 		}
 		for (Enemy enemy : world.getEnemies()) {
 			for (Bullet b : world.getSelfNormalBullets()) {
@@ -157,6 +160,7 @@ public class WorldController {
 			}
 			if (self.isHit(enemy)) {
 				// TODO
+				break;
 			}
 		}
 		for (PItem p : world.getItems()) {

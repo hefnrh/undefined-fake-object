@@ -20,12 +20,8 @@ public class Stage1 extends AbstractStage {
 	public synchronized void run() {
 		TextureRegion bimg = new TextureRegion(resources.get(
 				"images/bullet1.jpg", Texture.class), 112, 48, 16, 16);
-//		while (true) {
-			try {
-				wait(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		while (true) {
+			checkTime(500);
 			Enemy e = PowerElf.newPowerElf(0, World.CAMERA_HEIGHT, resources,
 					world, 20);
 			e.addAction(Actions.repeat(RepeatAction.FOREVER,
@@ -34,7 +30,7 @@ public class Stage1 extends AbstractStage {
 					world);
 			e.setShootPattern(new AllRangeShoot(10, 0.5f, 10, e, b, 1, 36));
 			world.addEnemy(e);
-//		}
+		}
 	}
 
 }

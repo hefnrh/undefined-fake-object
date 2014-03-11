@@ -15,6 +15,7 @@ public abstract class Self extends Aircraft {
 	public static final float RADIUS = 0.3f;
 	public static final float IMG_WIDTH = 2f;
 	public static final float IMG_HEIGHT = 3f;
+	public static final float GRAZE_RADIUS = 2f;
 	public static final float HIGH_SPEED = 12f;
 	public static final float LOW_SPEED = 6f;
 	public static final float HIGH_CROSS_SPEED = 8.487f;
@@ -161,6 +162,12 @@ public abstract class Self extends Aircraft {
 	
 	public void addPoint(int delta) {
 		point += delta;
+	}
+	
+	public boolean isGraze(Bullet b) {
+		float dx = getCheckX() - b.getCheckX(), dy = getCheckY() - b.getCheckY();
+		float d =  GRAZE_RADIUS + b.getCheckRadius();
+		return dx * dx + dy * dy < d * d;
 	}
 	
 	protected abstract void upgradeSupport(int i);

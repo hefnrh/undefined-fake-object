@@ -43,6 +43,10 @@ public class GameScreen implements Screen {
 	private BitmapFont font;
 	private Label powerLabel;
 	private Label pointLabel;
+	private Label lifeLabel;
+	private Label grazeLabel;
+	private int lifeCount;
+	private int grazeCount;
 
 	private Button up;
 	private Button down;
@@ -115,6 +119,12 @@ public class GameScreen implements Screen {
 
 	private void loadImage() {
 		Texture sidebar = resources.get("images/sidebar.jpg");
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+				Gdx.files.internal("font/font.ttf"));
+		font = generator.generateFont((int) (WH * 9f / 38f), "1234567890./",
+				false);
+		font.setColor(Color.WHITE);
+		generator.dispose();
 		Image bgLeft = new Image(new TextureRegionDrawable(new TextureRegion(
 				sidebar, 0, 0, 256, 480)));
 		bgLeft.setBounds(0, 0, QUARTER_GL_WIDTH, GL_HEIGHT);
@@ -125,30 +135,43 @@ public class GameScreen implements Screen {
 		inputStage.addActor(bgRight);
 		Image power = new Image(new TextureRegionDrawable(new TextureRegion(
 				sidebar, 256, 54, 84, 18)));
-		power.setSize(WH, WH * 9f / 38f);
+		power.setSize(WH, WH * 9f / 42f);
 		power.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN,
-				GL_HEIGHT - power.getHeight() - MARGIN);
+				GL_HEIGHT - (power.getHeight() + MARGIN) * 2);
 		inputStage.addActor(power);
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
-				Gdx.files.internal("font/font.ttf"));
-		font = generator.generateFont((int) power.getHeight(), "1234567890./",
-				false);
-		font.setColor(Color.WHITE);
-		generator.dispose();
-		Label.LabelStyle style = new Label.LabelStyle(font,
-				Color.WHITE);
+		Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
 		powerLabel = new Label("1.00/4.00", style);
 		powerLabel.setPosition(power.getX() + power.getWidth(), power.getY());
 		inputStage.addActor(powerLabel);
 		Image point = new Image(new TextureRegionDrawable(new TextureRegion(
 				sidebar, 328, 36, 84, 18)));
-		point.setSize(WH, WH * 9f / 38f);
+		point.setSize(WH, WH * 9f / 42f);
 		point.setPosition(power.getX(),
 				power.getY() - MARGIN - point.getHeight());
 		inputStage.addActor(point);
 		pointLabel = new Label("0", style);
 		pointLabel.setPosition(point.getX() + point.getWidth(), point.getY());
 		inputStage.addActor(pointLabel);
+		Image life = new Image(new TextureRegionDrawable(new TextureRegion(
+				sidebar, 256, 36, 64, 18)));
+		life.setSize(WH * 16f / 21f, WH * 9f / 42f);
+		life.setPosition(QUARTER_GL_WIDTH * 3 + MARGIN,
+				GL_HEIGHT - power.getHeight() - MARGIN);
+		inputStage.addActor(life);
+		lifeCount = 2;
+		lifeLabel = new Label("2", style);
+		lifeLabel.setPosition(power.getWidth() + life.getX(), life.getY());
+		inputStage.addActor(lifeLabel);
+		Image graze = new Image(new TextureRegionDrawable(new TextureRegion(
+				sidebar, 328, 18, 84, 18)));
+		graze.setSize(WH, WH * 9f / 42f);
+		graze.setPosition(point.getX(),
+				point.getY() - MARGIN - graze.getHeight());
+		inputStage.addActor(graze);
+		grazeCount = 0;
+		grazeLabel = new Label("0", style);
+		grazeLabel.setPosition(graze.getX() + graze.getWidth(), graze.getY());
+		inputStage.addActor(grazeLabel);
 	}
 
 	private void loadButtons() {
@@ -280,9 +303,8 @@ public class GameScreen implements Screen {
 		inputStage.addActor(downRight);
 
 		slow = new Button(new TextureRegionDrawable(atlas.findRegion("slow")));
-		slow.setSize(WH * 3, WH);
-		slow.setPosition((QUARTER_GL_WIDTH - slow.getWidth()) / 2f + MARGIN,
-				MARGIN);
+		slow.setSize(WH * 3, WH * 2);
+		slow.setPosition(MARGIN, MARGIN);
 		slow.addListener(listener);
 		inputStage.addActor(slow);
 		// TODO add bomb
@@ -295,6 +317,16 @@ public class GameScreen implements Screen {
 
 	public void updatePoint(int point) {
 		pointLabel.setText(String.valueOf(point));
+	}
+
+	public void updateLife(int delta) {
+		lifeCount += delta;
+		lifeLabel.setText(String.valueOf(lifeCount));
+	}
+
+	public void updateGraze(int delta) {
+		grazeCount += delta;
+		grazeLabel.setText(String.valueOf(grazeCount));
 	}
 
 	@Override

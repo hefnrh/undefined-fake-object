@@ -7,7 +7,14 @@ import com.me.mygdxgame.stage.World;
 
 public class Bullet extends Item {
 	
-	public static final LinkedList<Bullet> uselessEnemyBullet = new LinkedList<Bullet>();
+	public static final LinkedList<Bullet> uselessEnemyBullet;
+	
+	static {
+		uselessEnemyBullet = new LinkedList<Bullet>();
+		for (int i = 0; i < 1000; ++i) {
+			uselessEnemyBullet.add(new Bullet(0, 0, 0, 0, 0, null, null));
+		}
+	}
 	
 	public Bullet(float x, float y, float width, float height,
 			float checkRadius, TextureRegion img, World world) {
@@ -20,6 +27,7 @@ public class Bullet extends Item {
 			return new Bullet(x, y, width, height, checkRadius, img, world);
 		} else {
 			Bullet b = uselessEnemyBullet.poll();
+			b.world = world;
 			b.init(x, y, width, height, checkRadius, img);
 			return b;
 		}
