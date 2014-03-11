@@ -3,6 +3,7 @@ package com.me.mygdxgame.item;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.me.mygdxgame.stage.ShootPattern;
 import com.me.mygdxgame.stage.World;
 
 
@@ -11,6 +12,7 @@ public abstract class Enemy extends Aircraft {
 	protected int hp;
 	protected ArrayList<PItem> pointItems;
 	protected ArrayList<PowerItem> powerItems;
+	protected ShootPattern shootPattern;
 	
 	protected Enemy(float x, float y, float width, float height,
 			float checkRadius, AssetManager resources, World world, int hp) {
@@ -38,9 +40,17 @@ public abstract class Enemy extends Aircraft {
 		hp -= delta;
 	}
 	
-	public abstract void aimShoot(float delta, Bullet b, float speed);
+	public void setShootPattern(ShootPattern sp) {
+		shootPattern = sp;
+	}
 	
-	public abstract void randomShoot(float delta, Bullet b, float speed);
+	@Override
+	public void shoot(float delta) {
+		if (shootPattern == null) {
+			return;
+		}
+		shootPattern.shootWithCheck(delta);
+	}
 	
 	public abstract void recycle();
 }

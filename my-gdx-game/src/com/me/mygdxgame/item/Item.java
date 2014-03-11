@@ -63,6 +63,10 @@ public abstract class Item extends Actor {
 	public void setImg(TextureRegion img) {
 		this.img = img;
 	}
+	
+	public TextureRegion getImg() {
+		return img;
+	}
 
 	public float getImgRadius() {
 		return imgRadius;

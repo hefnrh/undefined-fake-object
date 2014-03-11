@@ -6,9 +6,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.stage.World;
 
 public class PowerElf extends Enemy {
@@ -48,26 +45,6 @@ public class PowerElf extends Enemy {
 		currentState = selfIdle;
 	}
 
-	@Override
-	public void shoot(float delta, Bullet b, Action a) {
-	}
-
-	@Override
-	public void aimShoot(float delta, Bullet b, float speed) {
-		Self s = world.getSelf();
-		float vx = s.getCheckX() - getCheckX();
-		float vy = s.getCheckY() - getCheckY();
-		float v = (float) Math.sqrt(vx * vx + vy * vy);
-		float f = speed * delta / v;
-		b.setPosition(getCheckX() - b.getWidth(), getCheckY() - b.getHeight());
-		b.addAction(Actions.repeat(RepeatAction.FOREVER,
-				Actions.moveBy(f * vx, f * vy)));
-		world.addEnemyBullet(b);
-	}
-
-	@Override
-	public void randomShoot(float delta, Bullet b, float speed) {
-	}
 
 	public synchronized static PowerElf newPowerElf(float x, float y,
 			AssetManager resources, World world, int hp) {
@@ -88,6 +65,7 @@ public class PowerElf extends Enemy {
 	public void recycle() {
 		synchronized (PowerElf.class) {
 			setInUse(false);
+			setShootPattern(null);
 			uselessPowerElf.add(this);
 		}
 	}

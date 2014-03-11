@@ -3,7 +3,6 @@ package com.me.mygdxgame.item;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.me.mygdxgame.stage.World;
 
 public abstract class Aircraft extends Item {
@@ -41,6 +40,7 @@ public abstract class Aircraft extends Item {
 		} else {
 			currentState = selfIdle;
 		}
+		shoot(delta);
 	}
 
 	@Override
@@ -49,5 +49,5 @@ public abstract class Aircraft extends Item {
 		super.draw(sb, alpha);
 	}
 	
-	public abstract void shoot(float delta, Bullet b, Action a);
+	public abstract void shoot(float delta);
 }
