@@ -42,7 +42,6 @@ public class PowerElf extends Enemy {
 			frame.flip(true, false);
 		}
 		moveLeft = new Animation(RUNNING_FRAME_DURATION, frames);
-		currentState = selfIdle;
 	}
 
 

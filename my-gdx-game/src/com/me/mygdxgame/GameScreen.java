@@ -116,6 +116,7 @@ public class GameScreen implements Screen {
 		resources.load("images/item.jpg", Texture.class);
 		resources.load("images/sidebar.jpg", Texture.class);
 		resources.load("images/enemy2.jpg", Texture.class);
+		resources.load("images/enemy1.jpg", Texture.class);
 		// FIXME remove after debug
 		while (!resources.update())
 			;

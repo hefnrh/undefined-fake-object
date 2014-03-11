@@ -23,6 +23,7 @@ public abstract class Aircraft extends Item {
 		this.resources = resources;
 		lastX = x;
 		loadAtlas(resources);
+		currentState = selfIdle;
 		inUse = true;
 	}
 	
