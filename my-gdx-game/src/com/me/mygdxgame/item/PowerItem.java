@@ -10,12 +10,9 @@ import com.me.mygdxgame.stage.World;
 public class PowerItem extends PItem {
 
 	public static final LinkedList<PowerItem> uselessPowerItem = new LinkedList<PowerItem>();
-	public static final float WIDTH = 0.5f;
-	public static final float HEIGHT = 0.5f;
-	public static final float RADIUS = 0.25f;
 
 	protected PowerItem(float x, float y, World world) {
-		super(x, y, WIDTH, HEIGHT, RADIUS, null, world);
+		super(x, y, null, world);
 	}
 
 	public synchronized static PowerItem newPowerItem(float x, float y,

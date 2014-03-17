@@ -7,9 +7,9 @@ import com.me.mygdxgame.stage.World;
 
 public abstract class Yinyangyu extends Enemy {
 
-	public static final float WIDTH = 1f;
-	public static final float HEIGHT = 1f;
-	public static final float RADIUS = 0.5f;
+	public static final float WIDTH = 2f;
+	public static final float HEIGHT = 2f;
+	public static final float RADIUS = 1f;
 	public static final float ROTATE_SPEED = 270f;
 
 	protected TextureRegion balls;

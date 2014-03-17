@@ -10,12 +10,9 @@ import com.me.mygdxgame.stage.World;
 public class PointItem extends PItem {
 
 	public static final LinkedList<PointItem> uselessPointItem = new LinkedList<PointItem>();
-	public static final float WIDTH = 0.5f;
-	public static final float HEIGHT = 0.5f;
-	public static final float RADIUS = 0.25f;
 
 	public PointItem(float x, float y, World world) {
-		super(x, y, WIDTH, HEIGHT, RADIUS, null, world);
+		super(x, y, null, world);
 	}
 
 	public synchronized static PointItem newPointItem(float x, float y,

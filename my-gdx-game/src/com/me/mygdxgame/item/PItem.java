@@ -8,10 +8,12 @@ import com.me.mygdxgame.stage.World;
 public abstract class PItem extends Item {
 
 	public static final float TRACE_SPEED = 15f;
+	public static final float WIDTH = 1f;
+	public static final float HEIGHT = 1f;
+	public static final float RADIUS = 0.5f;
 	
-	protected PItem(float x, float y, float width, float height,
-			float checkRadius, TextureRegion img, World world) {
-		super(x, y, width, height, checkRadius, img, world);
+	protected PItem(float x, float y, TextureRegion img, World world) {
+		super(x, y, WIDTH, HEIGHT, RADIUS, img, world);
 		addAction(Actions.repeat(RepeatAction.FOREVER, Actions.moveBy(0f, -4.8f, 1f)));
 	}
 
