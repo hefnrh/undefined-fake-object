@@ -48,7 +48,7 @@ public class PointYinyangyu extends Yinyangyu {
 		balls = new TextureRegion(enemy1, 192, 224, 32, 32);
 	}
 
-	public static PointYinyangyu newPointYinyangyu(float x, float y,
+	public static synchronized PointYinyangyu newPointYinyangyu(float x, float y,
 			AssetManager resources, World world, int hp) {
 		PointYinyangyu yyy;
 		if (uselessPointYinYangyu.isEmpty()) {
@@ -56,6 +56,7 @@ public class PointYinyangyu extends Yinyangyu {
 		} else {
 			yyy = uselessPointYinYangyu.poll();
 			yyy.setPosition(x, y);
+			yyy.setRotation(0);
 			yyy.inUse = true;
 			yyy.hp = hp;
 			yyy.clearActions();

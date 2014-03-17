@@ -101,7 +101,7 @@ public class Reimu extends Self {
 						NORMAL_BULLET_RADIUS, normalBulletImg, world);
 				b.setRotation(90);
 				b.addAction(Actions.repeat(RepeatAction.FOREVER,
-						Actions.moveBy(0, 6, 0.1f)));
+						Actions.moveBy(0, 0.7f)));
 			} else {
 				b = uselessNormalBullet.poll();
 				b.init(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,

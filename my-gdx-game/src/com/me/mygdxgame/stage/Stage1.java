@@ -4,13 +4,13 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Butterfly;
 import com.me.mygdxgame.item.Enemy;
 import com.me.mygdxgame.item.PointElf;
 import com.me.mygdxgame.item.PointYinyangyu;
 import com.me.mygdxgame.item.PowerElf;
+import com.me.mygdxgame.item.PowerYinyangyu;
 import com.me.mygdxgame.stage.pattern.AimShoot;
 import com.me.mygdxgame.stage.pattern.AllRangeShoot;
 
@@ -69,17 +69,28 @@ public class Stage1 extends AbstractStage {
 		world.addEnemy(e);
 
 		// yinyangyu
-		checkTime(7000);
+		checkTime(6500);
 		bimg = new TextureRegion(rawImg, 64, 208, 32, 32);
 		b = Bullet.newEnemyBullet(0, 0, 2f, 2f, 0.8f, bimg, world);
-		while (true) {
+		b.setRotation(-90);
+		for (int i = 0; i < 5; ++i) {
 			checkTime(500);
-			e = PointYinyangyu.newPointYinyangyu(0, World.CAMERA_HEIGHT,
-					resources, world, 10);
-			e.addAction(Actions.repeat(RepeatAction.FOREVER,
-					Actions.moveBy(40, -20, 3)));
-			b.setRotation(-90);
-			e.setShootPattern(new AimShoot(3, 0.5f, 2, e, b, 1, 9, 0.2f));
+			e = PointYinyangyu.newPointYinyangyu(0, World.CAMERA_HEIGHT * 0.9f,
+					resources, world, 50);
+			e.setOrigin(0, -10);
+			e.addAction(Actions.sequence(Actions.moveBy(15, 0, 1),
+					Actions.repeat(5, Actions.rotateBy(-360, 4f)),
+					Actions.moveBy(30, 0, 2)));
+			e.setShootPattern(new AimShoot(300, 0.5f, 2, e, b, 1, 9, 0.4f));
+			world.addEnemy(e);
+			checkTime(500);
+			e = PowerYinyangyu.newPowerYinyangyu(World.CAMERA_WIDTH, World.CAMERA_HEIGHT * 0.9f,
+					resources, world, 50);
+			e.setOrigin(0, -10);
+			e.addAction(Actions.sequence(Actions.moveBy(-15, 0, 1),
+					Actions.repeat(5, Actions.rotateBy(360, 4f)),
+					Actions.moveBy(-30, 0, 2)));
+			e.setShootPattern(new AimShoot(300, 0.5f, 2, e, b, 1, 9, 0.4f));
 			world.addEnemy(e);
 		}
 	}

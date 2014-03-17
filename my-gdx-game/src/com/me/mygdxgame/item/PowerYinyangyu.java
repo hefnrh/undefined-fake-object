@@ -48,7 +48,7 @@ public class PowerYinyangyu extends Yinyangyu {
 		balls = new TextureRegion(enemy1, 128, 224, 32, 32);
 	}
 
-	public static PowerYinyangyu newPowerYinyangyu(float x, float y,
+	public static synchronized PowerYinyangyu newPowerYinyangyu(float x, float y,
 			AssetManager resources, World world, int hp) {
 		PowerYinyangyu yyy;
 		if (uselessPowerYinYangyu.isEmpty()) {
@@ -56,6 +56,7 @@ public class PowerYinyangyu extends Yinyangyu {
 		} else {
 			yyy = uselessPowerYinYangyu.poll();
 			yyy.setPosition(x, y);
+			yyy.setRotation(0);
 			yyy.inUse = true;
 			yyy.hp = hp;
 			yyy.clearActions();

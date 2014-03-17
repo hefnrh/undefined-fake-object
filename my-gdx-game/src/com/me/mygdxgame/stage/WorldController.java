@@ -130,6 +130,8 @@ public class WorldController {
 			if (b.isHit(self)) {
 				recycleAllEnemyBullet();
 				parent.updateLife(1);
+				self.addPower(-100);
+				parent.updatePower(self.getPower());
 				return;
 			}
 			if (self.isGraze(b) && !b.isGrazed()) {

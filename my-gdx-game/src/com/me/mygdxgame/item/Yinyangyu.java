@@ -22,7 +22,7 @@ public abstract class Yinyangyu extends Enemy {
 
 	@Override
 	public void draw(SpriteBatch sb, float alpha) {
-		sb.draw(balls, getX(), getY(), WIDTH / 2f, HEIGHT / 2f, getWidth(),
+		sb.draw(balls, getCheckX() - WIDTH / 2, getCheckY() - HEIGHT / 2, WIDTH / 2, HEIGHT / 2, getWidth(),
 				getHeight(), getScaleX(), getScaleY(), time * ROTATE_SPEED);
 		super.draw(sb, alpha);
 	}

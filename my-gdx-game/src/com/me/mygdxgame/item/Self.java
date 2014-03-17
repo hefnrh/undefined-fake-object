@@ -59,7 +59,7 @@ public abstract class Self extends Aircraft {
 		supGroup.setOrigin(0f, 0f);
 		lowSpeed = false;
 		loadSupport(resources);
-		setPower(START_POWER);
+		setPower(MAX_POWER);
 	}
 
 	protected abstract void loadSupport(AssetManager resources);
@@ -153,6 +153,9 @@ public abstract class Self extends Aircraft {
 		power += delta;
 		if (power >= MAX_POWER) {
 			power = MAX_POWER;
+		}
+		if (power <= START_POWER) {
+			power = START_POWER;
 		}
 		if (power >= (powerLevel + 1) * 100) {
 			upgradeSupport(powerLevel);
