@@ -231,12 +231,15 @@ public abstract class Self extends Aircraft {
 	}
 	
 	public synchronized static void recycleNormalBullet(Bullet b) {
-		uselessNormalBullet.add(b);
+		if (!uselessNormalBullet.contains(b))
+			uselessNormalBullet.add(b);
 	}
 	
 	public synchronized static void recycleSpecialBullet(Bullet b) {
-		b.clearActions();
-		uselessSpecialBullet.add(b);
+		if (!uselessNormalBullet.contains(b)) {
+			b.clearActions();
+			uselessSpecialBullet.add(b);
+		}
 	}
 	
 	@Override

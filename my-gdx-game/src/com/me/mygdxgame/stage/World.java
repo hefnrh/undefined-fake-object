@@ -48,23 +48,28 @@ public class World {
 	}
 
 	public synchronized void addSelfNormalBullet(Bullet b) {
-		selfNormalBullets.add(b);
+		if (!selfNormalBullets.contains(b))
+			selfNormalBullets.add(b);
 	}
 
 	public synchronized void addSelfSpecialBullet(Bullet b) {
-		selfSpecialBullets.add(b);
+		if (!selfSpecialBullets.contains(b))
+			selfSpecialBullets.add(b);
 	}
 	
 	public synchronized void addEnemyBullet(Bullet b) {
-		enemyBullets.add(b);
+		if (!enemyBullets.contains(b))
+			enemyBullets.add(b);
 	}
 	
 	public synchronized void addItem(PItem p) {
-		items.add(p);
+		if (!items.contains(p))
+			items.add(p);
 	}
 	
 	public synchronized void addEnemy(Enemy e) {
-		enemies.add(e);
+		if (!enemies.contains(e))
+			enemies.add(e);
 	}
 	
 	public synchronized void removeSelfNormalBullet(Bullet b) {

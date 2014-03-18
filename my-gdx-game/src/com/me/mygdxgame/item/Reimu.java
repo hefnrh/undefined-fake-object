@@ -98,10 +98,16 @@ public class Reimu extends Self {
 		synchronized (Self.class) {
 			if (uselessNormalBullet.isEmpty()) {
 				b = new Bullet(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
-						NORMAL_BULLET_RADIUS, normalBulletImg, world);
+						NORMAL_BULLET_RADIUS, normalBulletImg, world) {
+					@Override
+					public void act(float delta) {
+						this.translate(0, 0.7f);
+						super.act(delta);
+					}
+				};
 				b.setRotation(90);
-				b.addAction(Actions.repeat(RepeatAction.FOREVER,
-						Actions.moveBy(0, 0.7f)));
+//				b.addAction(Actions.repeat(RepeatAction.FOREVER,
+//						Actions.moveBy(0, 0.7f)));
 			} else {
 				b = uselessNormalBullet.poll();
 				b.init(x, y, NORMAL_BULLET_WIDTH, NORMAL_BULLET_HEIGHT,
