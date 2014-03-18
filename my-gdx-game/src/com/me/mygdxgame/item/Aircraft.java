@@ -41,6 +41,7 @@ public abstract class Aircraft extends Item {
 		} else {
 			currentState = selfIdle;
 		}
+		lastX = currentX;
 		shoot(delta);
 	}
 
