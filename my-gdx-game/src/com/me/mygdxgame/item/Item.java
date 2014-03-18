@@ -88,8 +88,9 @@ public abstract class Item extends Actor {
 
 	public boolean isOutOfWorld() {
 		float x = getX(), y = getY();
-		return x + imgRadius < 0 || x - imgRadius > World.CAMERA_WIDTH
-				|| y + imgRadius < 0 || y - imgRadius > World.CAMERA_HEIGHT;
+		float margin = imgRadius * 2;
+		return x + margin < 0 || x - margin > World.CAMERA_WIDTH
+				|| y + margin < 0 || y - margin > World.CAMERA_HEIGHT;
 	}
 
 	public void setToTrace(Item i, float speed) {
