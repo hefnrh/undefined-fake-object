@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.me.mygdxgame.item.Bullet;
 import com.me.mygdxgame.item.Butterfly;
 import com.me.mygdxgame.item.Enemy;
@@ -13,6 +14,7 @@ import com.me.mygdxgame.item.PowerElf;
 import com.me.mygdxgame.item.PowerYinyangyu;
 import com.me.mygdxgame.stage.pattern.AimShoot;
 import com.me.mygdxgame.stage.pattern.AllRangeShoot;
+import com.me.mygdxgame.stage.pattern.OneShoot;
 
 public class Stage1 extends AbstractStage {
 
@@ -84,14 +86,48 @@ public class Stage1 extends AbstractStage {
 			e.setShootPattern(new AimShoot(300, 0.5f, 2, e, b, 1, 9, 0.4f));
 			world.addEnemy(e);
 			checkTime(500);
-			e = PowerYinyangyu.newPowerYinyangyu(World.CAMERA_WIDTH, World.CAMERA_HEIGHT * 0.9f,
-					resources, world, 50);
+			e = PowerYinyangyu.newPowerYinyangyu(World.CAMERA_WIDTH,
+					World.CAMERA_HEIGHT * 0.9f, resources, world, 50);
 			e.setOrigin(0, -10);
 			e.addAction(Actions.sequence(Actions.moveBy(-15, 0, 1),
-					Actions.repeat(5, Actions.rotateBy(360, 4f)),
+					Actions.repeat(4, Actions.rotateBy(360, 4f)),
 					Actions.moveBy(-30, 0, 2)));
 			e.setShootPattern(new AimShoot(300, 0.5f, 2, e, b, 1, 9, 0.4f));
 			world.addEnemy(e);
+		}
+
+		// elf
+		checkTime(5500);
+		bimg = new TextureRegion(rawImg, 208, 64, 16, 16);
+		b = Bullet.newEnemyBullet(0, 0, 1, 1, 0.25f, bimg, world);
+		b.setRotation(-90);
+		for (int i = 0; i < 6; ++i) {
+			checkTime(2000);
+			for (int j = 0; j < 6; ++j) {
+				e = PowerElf.newPowerElf(j * PowerElf.WIDTH * 2,
+						World.CAMERA_HEIGHT, resources, world, 40);
+				e.addAction(Actions.repeat(
+						RepeatAction.FOREVER,
+						Actions.sequence(Actions.moveBy(0, -2, 0.5f),
+								Actions.moveBy(2, 0, 0.5f),
+								Actions.moveBy(0, -2, 0.5f),
+								Actions.moveBy(-2, 0, 0.5f))));
+				e.setShootPattern(new OneShoot(100, 0, 1, e, b, 0.3f, -90));
+				world.addEnemy(e);
+			}
+			checkTime(2000);
+			for (int j = 1; j < 7; ++j) {
+				e = PointElf.newPointElf(World.CAMERA_WIDTH - (j + 1) * PowerElf.WIDTH * 2,
+						World.CAMERA_HEIGHT, resources, world, 40);
+				e.addAction(Actions.repeat(
+						RepeatAction.FOREVER,
+						Actions.sequence(Actions.moveBy(0, -2, 0.5f),
+								Actions.moveBy(-2, 0, 0.5f),
+								Actions.moveBy(0, -2, 0.5f),
+								Actions.moveBy(2, 0, 0.5f))));
+				e.setShootPattern(new OneShoot(100, 0, 1, e, b, 0.3f, -90));
+				world.addEnemy(e);
+			}
 		}
 	}
 
